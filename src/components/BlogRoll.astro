@@ -1,0 +1,14 @@
+---
+import { getCollection } from 'astro:content';
+import BlogRollEntry from "./BlogRollEntry.astro";
+
+const blogPosts = await getCollection('blog');
+---
+
+<ul>
+    { blogPosts.map(post => (
+        <li class="prose dark:prose-invert text-pretty">
+            <BlogRollEntry entry={post} />
+        </li>
+    ))}
+</ul>

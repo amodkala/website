@@ -1,0 +1,15 @@
+---
+import { getCollection } from 'astro:content';
+import Base from "../../layouts/BaseLayout.astro";
+import BlogRoll from "../../components/BlogRoll.astro";
+import {Content as Thoughts} from "../../components/thoughts.mdx";
+import '@/styles/globals.css';
+
+const lectureNotes = await getCollection('notes');
+---
+
+<Base title="writing">
+    <div>
+        <BlogRoll />
+    </div>
+</Base>

@@ -1,0 +1,77 @@
+---
+title: "Retrospective: Raft consensus implemented in Go"
+date: 2023-12-27T12:00:00-05:00
+description: "An old project of mine now in technical blog post format"
+tags:
+    - "projects"
+---
+# {frontmatter.title}
+
+## Intro
+
+In this post I'll be walking through a project of mine from 2022, which is an implementation 
+of (most of) the Raft consensus protocol using Go and gRPC.
+
+My implementation attempts to adhere to the <a href="https://raft.github.io/raft.pdf" target="_blank">original paper</a>
+as closely as possible, and I'll be describing my code in the order it appears in the paper 
+so it may be useful to have it open while you read through the rest of the post.
+
+All the project's dependencies are available through the devShell provided by `flake.nix`.
+With Nix installed (I recommend using the 
+<a href="https://determinate.systems/posts/determinate-nix-installer" target="_blank">Determinate Nix Installer</a>
+) run the following command for access to a shell with the packages available: 
+```bash 
+nix develop
+```
+Once the dependencies are installed, the Go protobuf definitions can be regenerated 
+by running this command in the `proto/` directory:
+```bash
+protoc --go_out=. --go_opt=paths=source_relative \
+    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+    raft.proto
+```
+
+## Definitions
+
+The workhorse of the package, and the only client-facing component, is the Consensus Module (CM) struct. I wrote it 
+to be as unopinionated as possible, making it easier to embed in other projects. If you're following along with the 
+paper, the scope of this project is step (2) from Figure 1: replicating commands across a cluster of peers, and committing 
+entries to an in-memory log.
+
+```go
+package raft
+
+import (
+    "sync"
+    "time"
+
+    "github.com/amodkala/raft/proto"
+)
+
+type Entry struct {
+    Term int32
+    Message []byte
+}
+
+type CM struct {
+    proto.UnimplementedRaftServer
+    mu sync.Mutex
+
+    // metadata
+    self       string
+    state      string
+    leader     string
+    peers      []proto.RaftClient
+    lastReset  time.Time
+    commitChan chan []byte
+
+    // implementation requirements
+    currentTerm int32
+    votedFor    string
+    log         []Entry
+    commitIndex int32
+    lastApplied int32
+    nextIndex   []int32
+    matchIndex  []int32
+}
+```

@@ -1,0 +1,11 @@
+---
+import Base from "./BaseLayout.astro";
+
+const { frontmatter } = Astro.props;
+---
+
+<Base title={frontmatter.title}>
+    <div class="prose dark:prose-invert max-w-3xl">
+        <slot />
+    </div>
+</Base> 

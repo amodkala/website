@@ -1,0 +1,13 @@
+---
+const { entry } = Astro.props;
+---
+
+<div class="grid grid-cols-3">
+    <time datetime={entry.data.date.toISOString()}>
+        {entry.data.date.toDateString().slice(4, 15)}
+    </time>
+    <div class="col-span-2 max-w-none">
+        <a href={`/writing/${entry.slug}`}>{entry.data.title}</a><br>
+        <em>{entry.data.description}</em>
+    </div>
+</div>
