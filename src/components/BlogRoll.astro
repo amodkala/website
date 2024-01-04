@@ -2,13 +2,16 @@
 import { getCollection } from 'astro:content';
 import BlogRollEntry from "./BlogRollEntry.astro";
 
-const blogPosts = await getCollection('blog');
+let blogPosts = await getCollection('blog');
 ---
 
 <ul>
-    { blogPosts.map(post => (
-        <li class="prose dark:prose-invert text-pretty">
-            <BlogRollEntry entry={post} />
-        </li>
-    ))}
+    { 
+         blogPosts
+        .sort((a, b) => new Date(b.data.date) - new Date(a.data.date))
+        .map(post => (
+            <li class="prose dark:prose-invert text-pretty">
+                <BlogRollEntry entry={post} />
+            </li>))
+    }
 </ul>

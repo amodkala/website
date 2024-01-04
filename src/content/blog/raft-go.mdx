@@ -1,77 +1,87 @@
 ---
 title: "Retrospective: Raft consensus implemented in Go"
-date: 2023-12-27T12:00:00-05:00
-description: "An old project of mine now in technical blog post format"
+date: 2024-01-04T12:00:00-05:00
+description: "Updating an older project of mine"
 tags:
     - "projects"
 ---
+import ExternalLink from '../../components/ExternalLink.astro';
+
 # {frontmatter.title}
 
-## Intro
+## Introduction
 
-In this post I'll be walking through a project of mine from 2022, which is an implementation 
-of (most of) the Raft consensus protocol using Go and gRPC.
+During the final internship recruiting season of my undergrad, the project that got the most 
+attention from interviewers was my implementation of the 
+<ExternalLink
+    text="Raft"
+    href="https://raft.github.io/raft.pdf"
+/> consensus algorithm using Go and gRPC. In the ~2 years since then I haven't really touched 
+the project, but now that I'm looking for full-time work I thought I'd see if I could make it 
+even better with the benefit of hindsight and experience.
 
-My implementation attempts to adhere to the <a href="https://raft.github.io/raft.pdf" target="_blank">original paper</a>
-as closely as possible, and I'll be describing my code in the order it appears in the paper 
-so it may be useful to have it open while you read through the rest of the post.
+When I first revisited the project, my most pressing concerns were:
+- [x] Solve race condition in the election process
+- [x] Create local demo with log replication
 
-All the project's dependencies are available through the devShell provided by `flake.nix`.
-With Nix installed (I recommend using the 
-<a href="https://determinate.systems/posts/determinate-nix-installer" target="_blank">Determinate Nix Installer</a>
-) run the following command for access to a shell with the packages available: 
-```bash 
-nix develop
-```
-Once the dependencies are installed, the Go protobuf definitions can be regenerated 
-by running this command in the `proto/` directory:
-```bash
-protoc --go_out=. --go_opt=paths=source_relative \
-    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-    raft.proto
-```
+The election race condition was occurring because RequestVote RPCs were sent from a candidate 
+to its peers in parallel using 
+<ExternalLink 
+    href="https://gobyexample.com/goroutines" 
+    text="goroutines" 
+/> but the result of the election was determined immediately thereafter, introducing the 
+possibility (and in this case, reality) that responses which took too long to receive were not 
+being counted. To address the issue, I added a 
+<ExternalLink 
+    text="wait group" 
+    href="https://gobyexample.com/waitgroups" 
+/> mechanism to ensure that all responses were accounted for before declaring an election won 
+or lost.
 
-## Definitions
+Creating a local demonstration was also fairly straightforward. Below, you'll see that the 
+demonstration accepts a series of IP addresses where the first is for the current consensus 
+module and the following addresses are for its peers. I then initialize a new consensus module 
+and channel for reading back committed entries before starting the consensus module in its own 
+goroutine. It is also here where I pass in the cluster configuration using the 
+<ExternalLink 
+    text="functional options" 
+    href="https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis" 
+/> pattern. 
 
-The workhorse of the package, and the only client-facing component, is the Consensus Module (CM) struct. I wrote it 
-to be as unopinionated as possible, making it easier to embed in other projects. If you're following along with the 
-paper, the scope of this project is step (2) from Figure 1: replicating commands across a cluster of peers, and committing 
-entries to an in-memory log.
+With the consensus module started in the background, I wait a generous 4 seconds 
+to allow leader election to occur before sending a replicate command to all consensus modules. 
+Of course, only the currently elected leader accepts the request, but as expected every client 
+receives the committed entries through the commit channel, which the demo listens for continuously.
 
 ```go
-package raft
+package main
 
 import (
-    "sync"
+    "log"
+    "os"
     "time"
 
-    "github.com/amodkala/raft/proto"
+    "github.com/amodkala/raft"
 )
 
-type Entry struct {
-    Term int32
-    Message []byte
-}
+func main() {
+    addr := os.Args[1]
+    peers := os.Args[2:]
+    cm, commitChan := raft.New(addr)
 
-type CM struct {
-    proto.UnimplementedRaftServer
-    mu sync.Mutex
+    go cm.Start(raft.WithLocalPeers(peers))
 
-    // metadata
-    self       string
-    state      string
-    leader     string
-    peers      []proto.RaftClient
-    lastReset  time.Time
-    commitChan chan []byte
+    time.Sleep(4 * time.Second)
+    cm.Replicate([]byte("hello"), []byte("world"))
 
-    // implementation requirements
-    currentTerm int32
-    votedFor    string
-    log         []Entry
-    commitIndex int32
-    lastApplied int32
-    nextIndex   []int32
-    matchIndex  []int32
+    for {
+        entry := <-commitChan
+        log.Printf("client of %s got entry %s", addr, string(entry))
+    }
 }
 ```
+
+With my top priorities out of the way, I now have a stable local testing environment to add features, 
+which could include:
+- Section 6 (cluster membership changes)
+- Section 7 (log compaction)
