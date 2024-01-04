@@ -5,15 +5,19 @@ description: "Updating an older project of mine"
 tags:
     - "projects"
 ---
-import ExternalLink from '../../components/ExternalLink.astro';
+import A from '../../components/ExternalLink.astro';
 
 # {frontmatter.title}
 
-## Introduction
+*link to 
+<A
+    href="https://github.com/amodkala/raft"
+    text="github repository"
+/>* 
 
 During the final internship recruiting season of my undergrad, the project that got the most 
 attention from interviewers was my implementation of the 
-<ExternalLink
+<A
     text="Raft"
     href="https://raft.github.io/raft.pdf"
 /> consensus algorithm using Go and gRPC. In the ~2 years since then I haven't really touched 
@@ -21,29 +25,36 @@ the project, but now that I'm looking for full-time work I thought I'd see if I 
 even better with the benefit of hindsight and experience.
 
 When I first revisited the project, my most pressing concerns were:
-- [x] Solve race condition in the election process
-- [x] Create local demo with log replication
+- Solve race condition in the election process
+- Create local demo with log replication
 
-The election race condition was occurring because RequestVote RPCs were sent from a candidate 
-to its peers in parallel using 
-<ExternalLink 
+The election race condition was occurring because 
+<A 
+    href="https://github.com/amodkala/raft/blob/c95c88085f70f8255208634dfdec34e990954a94/proto/raft.proto#L7"
+    text="RequestVote RPCs"
+/> were sent from a candidate to its peers in parallel using 
+<A
     href="https://gobyexample.com/goroutines" 
     text="goroutines" 
 /> but the result of the election was determined immediately thereafter, introducing the 
 possibility (and in this case, reality) that responses which took too long to receive were not 
 being counted. To address the issue, I added a 
-<ExternalLink 
+<A
     text="wait group" 
     href="https://gobyexample.com/waitgroups" 
 /> mechanism to ensure that all responses were accounted for before declaring an election won 
 or lost.
 
-Creating a local demonstration was also fairly straightforward. Below, you'll see that the 
-demonstration accepts a series of IP addresses where the first is for the current consensus 
-module and the following addresses are for its peers. I then initialize a new consensus module 
-and channel for reading back committed entries before starting the consensus module in its own 
-goroutine. It is also here where I pass in the cluster configuration using the 
-<ExternalLink 
+Creating a 
+<A 
+    text="local demonstration"
+    href="https://github.com/amodkala/raft/blob/master/demo.sh"
+/> was also fairly straightforward. Below, you'll see that the demonstration accepts a series 
+of IP addresses where the first is for the current consensus module and the following addresses 
+are for its peers. I then initialize a new consensus module and channel for reading back committed 
+entries before starting the consensus module in its own goroutine. It is also here where I pass in the 
+cluster configuration using the 
+<A
     text="functional options" 
     href="https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis" 
 /> pattern. 
@@ -83,5 +94,7 @@ func main() {
 
 With my top priorities out of the way, I now have a stable local testing environment to add features, 
 which could include:
+- Distributed demo
 - Section 6 (cluster membership changes)
 - Section 7 (log compaction)
+- Persist log to disk

@@ -5,7 +5,8 @@ const { frontmatter } = Astro.props;
 ---
 
 <Base title={frontmatter.title}>
-    <div class="prose dark:prose-invert max-w-3xl bg-cover">
+    <div class="prose dark:prose-invert max-w-3xl">
         <slot />
+        <a href="/writing">Back to Writing</a>
     </div>
 </Base> 

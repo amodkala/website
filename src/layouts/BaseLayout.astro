@@ -15,9 +15,9 @@ const { title } = Astro.props;
 		<title>{ title }</title>
         <ViewTransitions />
 	</head>
-	<body class="min-h-screen bg-slate-300 dark:bg-slate-500">
+	<body class="min-h-screen max-w-3xl bg-slate-300 dark:bg-slate-500">
         <Navbar />
-        <div class="p-8">
+        <div class="py-10 px-8">
             <slot />
         </div>
 	</body>

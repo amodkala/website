@@ -5,13 +5,20 @@ import BlogRollEntry from "./BlogRollEntry.astro";
 let blogPosts = await getCollection('blog');
 ---
 
-<ul>
-    { 
-         blogPosts
-        .sort((a, b) => new Date(b.data.date) - new Date(a.data.date))
-        .map(post => (
-            <li class="prose dark:prose-invert text-pretty">
-                <BlogRollEntry entry={post} />
-            </li>))
-    }
-</ul>
+<div>
+    <div class="prose dark:prose-invert">
+        <h1>Blog</h1>
+    </div>
+    <div class="pt-2">
+        <ul>
+            { 
+                 blogPosts
+                .sort((a, b) => new Date(b.data.date) - new Date(a.data.date))
+                .map(post => (
+                    <li class="prose dark:prose-invert text-pretty">
+                        <BlogRollEntry entry={post} />
+                    </li>))
+            }
+        </ul>
+    </div>
+</div>
