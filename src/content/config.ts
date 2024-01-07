@@ -7,27 +7,12 @@ const postsCollection = defineCollection({
       title: z.string(),
       date: z.date(),
       description: z.string(),
-      // author: z.string(),
-      // image: z.object({
-      //   url: z.string(),
-      //   alt: z.string()
-      // }),
-      tags: z.array(z.string())
-    })
-});
-
-const notesCollection = defineCollection({
-    type: 'content',
-    schema: z.object({
-        title: z.string(),
-        course : z.string(),
-        date: z.date(),
-        description: z.string()
+      tags: z.array(z.string()),
+      isDraft: z.boolean()
     })
 });
 
 // Export a single `collections` object to register your collection(s)
 export const collections = {
   blog: postsCollection,
-  notes: notesCollection,
 };

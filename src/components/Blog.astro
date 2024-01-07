@@ -1,8 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
-import BlogRollEntry from "./BlogRollEntry.astro";
+import BlogEntry from "./BlogEntry.astro";
 
 let blogPosts = await getCollection('blog');
+blogPosts = blogPosts
+            .filter(post => !post.data.isDraft)
+            .sort((a, b) => +new Date(b.data.date) - +new Date(a.data.date))
 ---
 
 <div>
@@ -12,11 +15,9 @@ let blogPosts = await getCollection('blog');
     <div class="pt-2">
         <ul>
             { 
-                 blogPosts
-                .sort((a, b) => +new Date(b.data.date) - +new Date(a.data.date))
-                .map(post => (
+                 blogPosts.map(post => (
                     <li class="prose dark:prose-invert text-pretty">
-                        <BlogRollEntry entry={post} />
+                        <BlogEntry entry={post} />
                     </li>))
             }
         </ul>
