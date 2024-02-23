@@ -1,7 +1,7 @@
 ---
-title: "Debugging Raft"
+title: "Approaches to race condition handling in Raft leader election"
 date: 2024-01-04T12:00:00-05:00
-description: "Tackling a years-old deadlock bug in one of my projects"
+description: "Comparing waitgroups to context cancellation"
 tags:
     - "projects"
 isDraft: false
@@ -16,31 +16,30 @@ import A from '../../components/ExternalLink.astro';
     text="github repository"
 />* 
 
-During the final internship recruiting season of my undergrad, the project that got the most 
-attention from interviewers was my implementation of the 
-<A
-    text="Raft"
-    href="https://raft.github.io/raft.pdf"
-/> consensus algorithm using Go and gRPC. In the ~2 years since then I haven't really touched 
-the project, but now that I'm looking for full-time work I thought I'd see if I could make it 
-even better with the benefit of hindsight and experience.
-
-When I first revisited the project, my most pressing concern was to address a race condition 
-in the election process. This bug was a major blocker for any other features I would want to add, 
-as without functional leader election the rest of the consensus algorithm never comes into effect.
-
 ## The Problem
 
-This election race condition was occurring because 
-<A 
-    href="https://github.com/amodkala/raft/blob/c95c88085f70f8255208634dfdec34e990954a94/proto/raft.proto#L7"
-    text="RequestVote RPCs"
-/> were sent from a candidate to its peers in parallel using 
-<A
-    href="https://gobyexample.com/goroutines" 
-    text="goroutines" 
-/>, with the responses being processed immediately after. The full code for the startElection 
-function looked like this at the time:
+{
+// This election race condition was occurring because 
+// <A 
+//     href="https://github.com/amodkala/raft/blob/c95c88085f70f8255208634dfdec34e990954a94/proto/raft.proto#L7"
+//     text="RequestVote RPCs"
+// /> were sent from a candidate to its peers in parallel using 
+// <A
+//     href="https://gobyexample.com/goroutines" 
+//     text="goroutines" 
+// />, which the `startElection` function did not wait to finish before determining the election's results. 
+// The full code for the `startElection` function looked like this at the time:
+}
+
+The following code implements the candidate component of leader election as 
+specified in the Raft paper.
+1. Vote for yourself.
+2. Send RequestVote RPCs to all peers in parallel with the relevant information.
+3. If your candidacy has ended, ignore the response.
+4. If the response indicates that you are behind, change state to "follower" and disregard response.
+5. If the vote was granted, count it.
+6. Check whether a majority was obtained.
+
 
 ```go
 func (cm *CM) startElection() {
@@ -105,20 +104,13 @@ func (cm *CM) startElection() {
 }
 ```
 
-Shoddy error handling aside, this code implements the candidate component of leader election as 
-specified in the Raft paper.
-1. Vote for yourself.
-2. Send RequestVote RPCs to all peers in parallel with the relevant information.
-3. If your candidacy has ended, ignore the response.
-4. If the response indicates that you are behind, change state to "follower" and disregard response.
-5. If the vote was granted, count it.
-6. Check whether a majority was obtained.
+{
+// To the untrained eye, this may seem fine. However, those familiar with goroutines will note that the 
+// function that spawns a goroutine will not wait for the goroutine to finish executing before returning.
+}
 
-To the untrained eye, this may seem fine. However, those familiar with goroutines will note that the 
-function that spawns a goroutine will not wait for the goroutine to finish executing before returning.
-
-Another way to look at the function then, is that nearly instantly after sending our RPCs we evaluate 
-the win condition, lose the election (as no votes were received instantly aside from our own) and begin 
+It does, however, contain a pretty glaring bug: nearly instantly after sending our RPCs, the candidate evaluates
+the win condition, loses the election (as no votes were received instantly aside from our own) and begins 
 a new election.
 
 This led to a state of deadlock where every cluster node would initiate futile elections constantly, and 
@@ -213,16 +205,19 @@ wait for (`wg.Add(1)`), and decrement to indicate that the process is finished (
 The key line is `wg.Wait()`, which blocks function execution until all the pending processes 
 tracked by the wait group are done.
 
-This solved the issue immediately, and I was even able to drop the election timers by a factor 
-of 10 without any breaking issues. I pushed this fix to GitHub and was ready to call it done, 
-until later that night as I was about to fall asleep I had a sudden realization: 
-fundamentally, **we don't care whether all votes are in.**
+{
+// This solved the issue immediately, and I was even able to drop the election timers by a factor 
+// of 10 without any breaking issues. I pushed this fix to GitHub and was ready to call it done, 
+// until later that night as I was about to fall asleep I had a sudden realization: 
+// fundamentally, **we don't care whether all votes are in.**
+}
 
 ## Solution 2: Channels with Context Cancellation
 
-As a candidate it doesn't matter how every one of our peers respond, we only care whether we 
-have received a plurality of the cluster's votes. The way I went about implementing this 
-behaviour was to again use two of the primary tools used by Go programmers: 
+The issue with the above approach is that as a candidate it doesn't matter how every one of our 
+peers respond, we only care whether we have received a plurality of the cluster's votes. The way 
+I went about implementing this behaviour was to again use two of the primary tools used by Go 
+programmers: 
 <A
     text="channels"
     href="https://gobyexample.com/channels"
@@ -331,18 +326,25 @@ func (cm *CM) startElection() {
     }
 }
 ```
+The performance gains are negligible on my local test setup, however I am inclined to keep this 
+solution for now as it is more "correct," and my roadmap for the project includes setting up a 
+containerized and distributed demo where more latency is introduced and the effects could end up 
+becoming more pronounced. 
 
-The results here are a mixed bag. On the one hand this approach works well, yet 
-testing on a local network means that the performance gains relative to the wait 
-group approach are negligible at the cost of a great deal of added complexity. 
-
-I am inclined to keep this solution for now, as my roadmap for the project includes 
-setting up a distributed testing environment where more latency is introduced and 
-the effects could end up becoming more pronounced. Some other things I could add are:
-- Section 6 (cluster membership changes)
-- Section 7 (log compaction)
-- A more feature-complete client example
-
-I hope you learned a bit from this iterative problem-solving process, I know I 
-definitely did. If you have any questions or comments, feel free to contact me 
-through the information posted on my [about page](/)
+{
+// 
+// The results here are a mixed bag. On the one hand this approach works well, yet 
+// testing on a local network means that the performance gains relative to the wait 
+// group approach are negligible at the cost of a great deal of added complexity. 
+// 
+// 
+// 
+// 
+// - Section 6 (cluster membership changes)
+// - Section 7 (log compaction)
+// - A more feature-complete client example
+// 
+// I hope you learned a bit from this iterative problem-solving process, I know I 
+// definitely did. If you have any questions or comments, feel free to contact me 
+// through the information posted on my [about page](/)
+}

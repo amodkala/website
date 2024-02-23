@@ -16,7 +16,7 @@ blogPosts = blogPosts
         <ul>
             { 
                  blogPosts.map(post => (
-                    <li class="prose dark:prose-invert text-pretty">
+                    <li class="prose dark:prose-invert text-pretty max-w-none">
                         <BlogEntry entry={post} />
                     </li>))
             }
