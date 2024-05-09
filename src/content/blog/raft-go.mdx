@@ -55,37 +55,7 @@ func (cm *CM) startElection() {
 
 		go func(id int, peer proto.RaftClient) {
 
-			var lastLogIndex, lastLogTerm int32
-
-			cm.mu.Lock()
-            lastLogIndex = int32(len(cm.log) - 1)
-            lastLogTerm = cm.log[lastLogIndex].Term
-			cm.mu.Unlock()
-
-			req := &proto.RequestVoteRequest{
-				Term:         electionTerm,
-				CandidateId:  cm.self,
-				LastLogIndex: lastLogIndex,
-				LastLogTerm:  lastLogTerm,
-			}
-
-			res, err := peer.RequestVote(context.Background(), req)
-            if err != nil {
-                log.Printf("%v", err)
-            }
-
-            cm.mu.Lock()
-
-            if cm.state != "candidate" {
-                cm.mu.Unlock()
-                return
-            }
-
-            if res.Term > electionTerm {
-                cm.becomeFollower(res.Term)
-                cm.mu.Unlock()
-                return
-            }
+            // election code...
 
             if res.Term == electionTerm && res.VoteGranted {
                 votes += 1
@@ -149,37 +119,7 @@ func (cm *CM) startElection() {
 		go func(id int, peer proto.RaftClient) {
             defer wg.Done()
 
-			var lastLogIndex, lastLogTerm int32
-
-			cm.mu.Lock()
-            lastLogIndex = int32(len(cm.log) - 1)
-            lastLogTerm = cm.log[lastLogIndex].Term
-			cm.mu.Unlock()
-
-			req := &proto.RequestVoteRequest{
-				Term:         electionTerm,
-				CandidateId:  cm.self,
-				LastLogIndex: lastLogIndex,
-				LastLogTerm:  lastLogTerm,
-			}
-
-			res, err := peer.RequestVote(context.Background(), req)
-            if err != nil {
-                log.Printf("%v", err)
-            }
-
-            cm.mu.Lock()
-
-            if cm.state != "candidate" {
-                cm.mu.Unlock()
-                return
-            }
-
-            if res.Term > electionTerm {
-                cm.becomeFollower(res.Term)
-                cm.mu.Unlock()
-                return
-            }
+            // election code...
 
             if res.Term == electionTerm && res.VoteGranted {
                 votes += 1
@@ -264,19 +204,7 @@ func (cm *CM) startElection() {
                 }
             }()
 
-			var lastLogIndex, lastLogTerm int32
-
-			cm.mu.Lock()
-            lastLogIndex = int32(len(cm.log) - 1)
-            lastLogTerm = cm.log[lastLogIndex].Term
-			cm.mu.Unlock()
-
-			req := &proto.RequestVoteRequest{
-				Term:         electionTerm,
-				CandidateId:  cm.self,
-				LastLogIndex: lastLogIndex,
-				LastLogTerm:  lastLogTerm,
-			}
+            // election code...
 
 			res, err := peer.RequestVote(ctx, req)
             if err != nil {
@@ -285,17 +213,7 @@ func (cm *CM) startElection() {
                 return
             }
 
-            cm.mu.Lock()
-            defer cm.mu.Unlock()
-
-            if cm.state != "candidate" {
-                return
-            }
-
-            if res.Term > electionTerm {
-                cm.becomeFollower(res.Term)
-                return
-            }
+            // election code...
 
             select {
             case voteChan <- res.Term == electionTerm && res.VoteGranted:

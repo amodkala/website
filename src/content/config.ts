@@ -4,25 +4,23 @@ import { z, reference, defineCollection } from "astro:content";
 const postsCollection = defineCollection({
     type: 'content',
     schema: z.object({
-      title: z.string(),
-      date: z.date(),
-      description: z.string(),
-      tags: z.array(z.string()),
-      isDraft: z.boolean()
+        title: z.string(),
+        date: z.date(),
+        description: z.string(),
+        tags: z.array(z.string()),
+        isDraft: z.boolean()
     })
 });
 
-// const projectsCollection = defineCollection({
-//     type: 'data',
-//     schema: z.object({
-//         title: z.string(),
-//         url: z.string().url(),
-//         relatedPosts: z.array(reference('blog')),
-//     })
-// });
+const notesCollection = defineCollection({
+    type: 'content',
+    schema: z.object({
+        title: z.string()
+    })
+})
 
 // Export a single `collections` object to register your collection(s)
 export const collections = {
-  blog: postsCollection,
-  // projects: projectsCollection,
+    blog: postsCollection,
+    notes: notesCollection,
 };

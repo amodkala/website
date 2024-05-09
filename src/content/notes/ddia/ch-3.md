@@ -1,0 +1,90 @@
+---
+title: Storage and Retrieval
+---
+
+## Database Data Structures
+
+Logs are append-only data structures used to record the operations that a 
+database has processed. To avoid running out of disk space, logs can be 
+segmented into files of a set size, (e.g once a log file hits a 4MB size limit, 
+start writing to the next file). Since logs are append-only, they store all the
+historical updates of a given record which can take up disk space 
+unnecessarily. Segmentation allows us to use compaction, which is when we 
+discard all duplicate keys in a log except for the most recent update. Just as
+segmentation buys us compaction, compaction buys us mergeability.
+
+Indexes are another type of data structure which facilitate data lookups. Index
+data structures can make reading from a database more efficient, at the expense
+of some performance overhead when writing data. One example is the hash index, 
+where we use a hash map to store the byte offset of a given record, allowing 
+for efficient lookups.
+
+Sorted String Tables (SSTables) are similar to a standard append-only log, with
+the caveat that records are sorted by key, and each key only appears once per 
+segment (already achieved through compaction). Having sorted records means that
+merging is more efficient, lookups can be accomplished using sparse indexes, 
+and records can be grouped into compressable blocks.
+
+Log-Structured Merge-Trees (LSM-Trees) extend the SSTable into a fully-fledged
+storage engine using the following algorithm:
+- write requests are added to an in-memory balanced tree data structure (also 
+called the memtable)
+- To facilitate crash-recovery, a temporary on-disk log can mirror the current
+memtable, and it can be discarded once the memtable is flushed to disk.
+- When the memtable hits a size threshold, write it to disk as an SSTable file
+(easy since keys are sorted already)
+- Read requests go through the memtable first, then to the SSTables in reverse-
+chronological order
+- Merging and compaction can be performed in the background.
+
+Bloom filters are memory-efficient data structures which can be used to avoid
+performing look-ups for a key that doesn't exist.
+
+B-Trees are tree data structures where each node is a page which is made up of
+either keys (leaf pages) or references to other pages. As write operations 
+sometimes involve writing to disk multiple times, crash-resiliency is also 
+handled by a write-ahead log (WAL) which must be appended to before any 
+operation can be applied.
+
+Compared to B-Trees, LSM-Trees face less write-amplification as a result of the
+use of the in-memory memtable. LSM-Trees are also the winner when it comes to 
+disk usage, as they are not limited by page sizes and thus can be compressed
+more efficiently. B-Trees, however, do not face the performance overhead that 
+the compaction process causes, and the fact that keys only exist in one place
+means that concurrency primitives are more easily implementable.
+
+## Transaction Processing or Analytics
+
+Online transaction processing (OLTP) is the access pattern by which database 
+operations are performed in response to user input, usually only interacting
+with a small number of records using an index.
+
+Online analytic processing (OLAP) is the access pattern for databases which 
+involves scanning over a large number of records, usually making aggregate 
+calculations
+
+Data warehousing is a technique to prevent expensive OLAP operations from being
+run directly on OLTP databases, which might affect the performance of the often
+latency-sensitive databases. Data is extracted periodically from OLTP 
+databases, transformed into schemas that facilitate analysis, and loaded into 
+the data warehouse where OLAP operations can be performed on it without 
+affecting production system performance. One data model, or schema, used in 
+data warehouses is the star schema. In this schema, data warehouses consist of
+fact tables which contain records that map to events, and whose columns often
+contain foreign key references to dimension tables which have information about
+the event.
+
+## Column-Oriented Storage
+
+Column-oriented storage is a paradigm wherein information isn't grouped by the 
+record it is associated with (as in row-oriented storage), but rather by its 
+type. Instead of accessing the 23rd record and reading information from just 
+three columns, you only have to access the 23rd item in three columns. 
+
+Bitmap-indexing is a compression technique that lends itself well to 
+column-oriented storage schemes where the number of distinct values is much 
+less than the number of items in the column. For a column of length n, the
+bitmap for a specific value x is an array of length n consisting of 0s and 1s,
+where a 1 at position p means that column\[p\] = x. Encoding columns this way
+allows us to use bitwise operators to filter columns by value in a more 
+efficient manner.
