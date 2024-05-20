@@ -1,0 +1,9 @@
+---
+const { entry } = Astro.props;
+---
+
+<div class="grid grid-cols-3">
+    <div class="col-span-2 max-w-none">
+        <a href={`/notes/${entry.slug}`}>{entry.data.title}</a><br>
+    </div>
+</div>

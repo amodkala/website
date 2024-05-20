@@ -15,9 +15,11 @@ const postsCollection = defineCollection({
 const notesCollection = defineCollection({
     type: 'content',
     schema: z.object({
-        title: z.string()
+        key: z.number(),
+        title: z.string(),
+        source: z.string()
     })
-})
+});
 
 // Export a single `collections` object to register your collection(s)
 export const collections = {

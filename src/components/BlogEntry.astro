@@ -7,7 +7,7 @@ const { entry } = Astro.props;
         {entry.data.date.toDateString().slice(4, 15)}
     </time>
     <div class="col-span-2 max-w-none">
-        <a href={`/writing/${entry.slug}`}>{entry.data.title}</a><br>
+        <a href={`/blog/${entry.slug}`}>{entry.data.title}</a><br>
         <em>{entry.data.description}</em>
     </div>
 </div>

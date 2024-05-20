@@ -1,0 +1,46 @@
+---
+// Import necessary functions and components
+import { getCollection } from 'astro:content';
+import NoteEntry from "./NoteEntry.astro";
+
+// Fetch notes from the collection
+let notes = await getCollection('notes');
+
+// Prepare to group notes by source
+let sources = {};
+notes.forEach((note) => {
+    const source = note.data.source;
+    if (!(source in sources)) {
+        sources[source] = [];
+    }
+    sources[source].push(note);
+});
+
+// Sort each group of notes by key (if necessary)
+Object.keys(sources).forEach(source => {
+    sources[source].sort((a, b) => a.data.key - b.data.key);
+});
+---
+
+<div>
+    <div class="prose dark:prose-invert">
+        <h1>Notes</h1>
+    </div>
+    <div class="pt-2">
+        {
+            Object.entries(sources).map(([source, notes]) => (
+                <div key={source} class="my-5 prose dark:prose-invert">
+                    <h2>{ source }</h2>
+                    <ul>
+                        {notes.map(note => (
+                            <li key={note.data.key} class="prose dark:prose-invert text-pretty max-w-none">
+                                <NoteEntry entry={note} />
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            ))
+        }
+    </div>
+</div>
+
