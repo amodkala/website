@@ -3,11 +3,20 @@
 import { getCollection } from 'astro:content';
 import NoteEntry from "./NoteEntry.astro";
 
-// Fetch notes from the collection
-let notes = await getCollection('notes');
+// Define an interface for the note structure
+interface Note {
+  data: {
+    key: number;
+    title: string;
+    source: string;
+  }
+}
 
-// Prepare to group notes by source
-let sources = {};
+// Fetch notes from the collection
+let notes: Note[] = await getCollection('notes');
+
+// Initialize sources with an explicit type to avoid TypeScript errors
+let sources: { [key: string]: Note[] } = {};
 notes.forEach((note) => {
     const source = note.data.source;
     if (!(source in sources)) {
@@ -16,7 +25,7 @@ notes.forEach((note) => {
     sources[source].push(note);
 });
 
-// Sort each group of notes by key (if necessary)
+// Sort each group of notes by key
 Object.keys(sources).forEach(source => {
     sources[source].sort((a, b) => a.data.key - b.data.key);
 });
@@ -29,11 +38,11 @@ Object.keys(sources).forEach(source => {
     <div class="pt-2">
         {
             Object.entries(sources).map(([source, notes]) => (
-                <div key={source} class="my-5 prose dark:prose-invert">
-                    <h2>{ source }</h2>
+                <div class="my-5 prose dark:prose-invert">
+                    <h2>{source}</h2>
                     <ul>
                         {notes.map(note => (
-                            <li key={note.data.key} class="prose dark:prose-invert text-pretty max-w-none">
+                            <li class="prose dark:prose-invert text-pretty max-w-none">
                                 <NoteEntry entry={note} />
                             </li>
                         ))}
