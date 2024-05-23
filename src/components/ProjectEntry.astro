@@ -1,0 +1,8 @@
+---
+import A from './ExternalLink.astro';
+const { entry } = Astro.props;
+---
+
+<div>
+    <A href={entry.data.url} text={entry.id} />
+</div>

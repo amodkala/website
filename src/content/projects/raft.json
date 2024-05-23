@@ -1,0 +1,7 @@
+{
+    "description": "An implementation of the Raft consensus algorithm in Go",
+    "url": "https://github.com/amodkala/raft",
+    "posts": [
+        "raft-go"
+    ]
+}

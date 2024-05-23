@@ -1,0 +1,4 @@
+{
+    "description": "Decoder-only transformer model for text classification",
+    "url": "https://github.com/amodkala/transformer"
+}
