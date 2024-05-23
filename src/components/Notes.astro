@@ -2,6 +2,8 @@
 // Import necessary functions and components
 import { getCollection } from 'astro:content';
 import NoteEntry from "./NoteEntry.astro";
+import Preamble from "./text/notes-preamble.mdx";
+import Postscript from "./text/notes-postscript.mdx";
 
 // Define an interface for the note structure
 interface Note {
@@ -34,8 +36,9 @@ Object.keys(sources).forEach(source => {
 <div>
     <div class="prose dark:prose-invert">
         <h1>Notes</h1>
+        <Preamble />
     </div>
-    <div class="pt-2">
+    <div class="py-5">
         {
             Object.entries(sources).map(([source, notes]) => (
                 <div class="my-5 prose dark:prose-invert">
@@ -50,6 +53,9 @@ Object.keys(sources).forEach(source => {
                 </div>
             ))
         }
+    </div>
+    <div class="prose dark:prose-invert">
+        <Postscript />
     </div>
 </div>
 

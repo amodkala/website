@@ -1,0 +1,57 @@
+---
+key: 4
+title: "Encoding and Evolution"
+source: "Designing Data-Intensive Applications"
+---
+
+## Formats for Encoding Data
+
+Programs interact with data in one of two forms, either using pointers to data
+structures (manipulable and provide efficient access) or encoded as a byte
+sequence for disk writing or network transportation. We transform data between
+these two representations using serialization/deserialization, also referred to
+as marshalling/unmarshalling.
+
+Standardized, language-agnostic formats for representing data can be
+human-readable, or "textual", as is the case with JSON, XML, and CSV. These have
+the advantage of easy interoperability with third-party libraries and consumers.
+On the other hand, binary encoding can be more compact and easier to parse.
+
+Protocol Buffers is one such binary encoding library. It requires that users
+define a schema for data similar to a struct definition, including a tag (key)
+and type for each field. The serialized representation encodes this information
+plus the length and value of data to compact the information.
+
+Schema evolution in Protocol Buffers is facilitated by field tags, where new
+fields are given a unique tag. Old code uses the encoded data length to skip
+over fields that it isn't programmed to handle, ensuring forwards compatibility.
+Backwards compatibility also depends on field tags, though new fields must be
+optional or have a default value, lest they fail checks.
+
+## Modes of Dataflow
+
+Database writes involve encoding data to the specified format, while reads
+involve decoding data. Data can be read or written by one or more processes, 
+simultaneously or with years in between. Forwards and backwards compatibility
+are clearly important here, but care must also be taken to not lose data in
+between encoding and decoding operations.
+
+Services are the processes on either end of a client-server connection where
+data is transmitted between them over a network. Seperating business logic into
+services allows for easier maintainability and coordination, in theory
+increasing development velocity. Web services are those which communicate via
+HTTP, with REST being the most common paradigm for designing web services.
+Remote procedure call (RPC) frameworks are alternatives to REST that conceal
+network calls in code, making them look like any other function call. RPC
+frameworks often make use of binary encoding (e.g gRPC uses Protobuf) while REST
+most often uses JSON or XML data formats.
+
+Asynchronous message-passing systems can be thought of as a middle ground 
+between the service and database paradigms. Like services, these systems rely on
+network connections to pass data, however this data isn't directly sent from
+service to service, instead it is stored temporarily by a message broker. This
+model confers advantages such as buffering messages if the recipient is
+unavailable, sending messages to multiple recipients at once, and decoupling
+sender from receiver. This last point implies that senders no longer expect to
+receive synchronous replies to their messages. We say that senders publish
+messages to topics, which then go out to consumers of said topics.
