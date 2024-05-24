@@ -38,16 +38,18 @@ Object.keys(sources).forEach(source => {
         <h1>Notes</h1>
         <Preamble />
     </div>
-    <div class="py-5">
+    <div>
         {
             Object.entries(sources).map(([source, notes]) => (
                 <div class="my-5 prose dark:prose-invert">
                     <h2>{source}</h2>
                     <ul>
                         {notes.map(note => (
-                            <li class="prose dark:prose-invert text-pretty max-w-none">
-                                <NoteEntry entry={note} />
-                            </li>
+                            <div class="mt-2">
+                                <li class="prose dark:prose-invert text-pretty max-w-none">
+                                    <NoteEntry entry={note} />
+                                </li>
+                            </div>
                         ))}
                     </ul>
                 </div>

@@ -1,0 +1,54 @@
+---
+key: 7
+title: "Log-Structured Storage"
+source: "Database Internals"
+notes:
+- ddia-ch-3
+---
+
+{frontmatter.source}
+# {frontmatter.title}
+
+B-Trees and LSM-Trees are examples of mutable and immutable data structures,
+respectively. An update operation on a B-Tree involves overwriting the record on
+disk, while updating an LSM-Tree first inserts a new record before eventually
+reconciling the change. Read operations are more efficient on mutable data
+structures as once the record is located on disk its value can be returned to
+the client. Contrast this with immutable data structures, which requires
+processing of every occurence of the record in order to produce the most recent
+key. Write operations, on the other hand, favour immutable data structures.
+LSM-Trees insert records into a balanced and sorted memtable which flushes
+records to the disk (via SSTables) in the background. The initial write
+operation is complex than for the B-Tree, which must traverse its structure to
+write the new record to the appropriate location on disk, rebalancing itself and
+rewriting pages as necessary.
+
+## Structure
+
+The LSM-Tree's memory-resident component (also called the memtable) is a mutable
+buffer which serves as the first target for read and write operations. It is
+usually implemented as a sorted tree which facilitates concurrent access, and is
+accompanied by a write-ahead log (WAL) for recovery purposes. Once the memtable
+exceeds a specified size, its contents are flushed to files on disk which are
+only accessed during read, merge, and file removal operations. Once flushed, the
+segment of the WAL containing the records stored by that memtable can be
+discarded.
+
+The multicomponent LSM-Tree is one where memtables are flushed in their entirety
+as individual disk-resident tables. To avoid accessing multiple files per read
+operation, we periodically compact select tables by aggregating them into a new
+file and discarding the old tables.
+
+Deleting a record requires the use of a tombstone, which acts as a flag to
+remove all instances of the key during the reconciliation process.
+
+## Lookups
+
+Due to their immutability, LSM-Trees may contain different versions of data
+across their multiple components (memory-resident and disk-resident tables),
+which necessitates a merge-and-reconcile strategy for performing lookups.
+
+Merge-iteration takes advantage of the fact that memory-resident and
+disk-resident tables are all sorted to iterate across all sources at once.
+Iterators for each source are loaded into a priority queue implementation such
+as a min-heap

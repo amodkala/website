@@ -8,7 +8,11 @@ const postsCollection = defineCollection({
         date: z.date(),
         description: z.string(),
         tags: z.array(z.string()),
-        isDraft: z.boolean()
+        isDraft: z.boolean(),
+
+        posts: z.array(reference('blog')).optional(),
+        notes: z.array(reference('notes')).optional(),
+        projects: z.array(reference('projects')).optional()
     })
 });
 
@@ -17,7 +21,11 @@ const notesCollection = defineCollection({
     schema: z.object({
         key: z.number(),
         title: z.string(),
-        source: z.string()
+        source: z.string(),
+
+        posts: z.array(reference('blog')).optional(),
+        notes: z.array(reference('notes')).optional(),
+        projects: z.array(reference('projects')).optional()
     })
 });
 
@@ -26,7 +34,10 @@ const projectsCollection = defineCollection({
     schema: z.object({
         description: z.string(),
         url: z.string().url(),
-        posts: z.array(reference('blog')).optional()
+
+        posts: z.array(reference('blog')).optional(),
+        notes: z.array(reference('notes')).optional(),
+        projects: z.array(reference('projects')).optional()
     })
 })
 
