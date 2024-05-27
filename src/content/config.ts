@@ -10,9 +10,9 @@ const postsCollection = defineCollection({
         tags: z.array(z.string()),
         isDraft: z.boolean(),
 
-        posts: z.array(reference('blog')).optional(),
-        notes: z.array(reference('notes')).optional(),
-        projects: z.array(reference('projects')).optional()
+        relatedPosts: z.array(reference('blog')).optional(),
+        relatedNotes: z.array(reference('notes')).optional(),
+        relatedProjects: z.array(reference('projects')).optional()
     })
 });
 
@@ -23,9 +23,9 @@ const notesCollection = defineCollection({
         title: z.string(),
         source: z.string(),
 
-        posts: z.array(reference('blog')).optional(),
-        notes: z.array(reference('notes')).optional(),
-        projects: z.array(reference('projects')).optional()
+        relatedPosts: z.array(reference('blog')).optional(),
+        relatedNotes: z.array(reference('notes')).optional(),
+        relatedProjects: z.array(reference('projects')).optional()
     })
 });
 
@@ -35,9 +35,9 @@ const projectsCollection = defineCollection({
         description: z.string(),
         url: z.string().url(),
 
-        posts: z.array(reference('blog')).optional(),
-        notes: z.array(reference('notes')).optional(),
-        projects: z.array(reference('projects')).optional()
+        relatedPosts: z.array(reference('blog')).optional(),
+        relatedNotes: z.array(reference('notes')).optional(),
+        relatedProjects: z.array(reference('projects')).optional()
     })
 })
 

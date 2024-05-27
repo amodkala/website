@@ -3,7 +3,7 @@
 import { getCollection } from 'astro:content';
 import NoteEntry from "./NoteEntry.astro";
 import Preamble from "./text/notes-preamble.mdx";
-import Postscript from "./text/notes-postscript.mdx";
+// import Postscript from "./text/notes-postscript.mdx";
 
 // Define an interface for the note structure
 interface Note {
@@ -56,8 +56,10 @@ Object.keys(sources).forEach(source => {
             ))
         }
     </div>
+    <!--
     <div class="prose dark:prose-invert">
         <Postscript />
     </div>
+    //-->
 </div>
 

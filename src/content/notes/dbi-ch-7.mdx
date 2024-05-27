@@ -2,12 +2,14 @@
 key: 7
 title: "Log-Structured Storage"
 source: "Database Internals"
-notes:
+relatedNotes:
 - ddia-ch-3
 ---
 
 {frontmatter.source}
 # {frontmatter.title}
+
+## LSM-Trees
 
 B-Trees and LSM-Trees are examples of mutable and immutable data structures,
 respectively. An update operation on a B-Tree involves overwriting the record on
@@ -22,8 +24,6 @@ records to the disk (via SSTables) in the background. The initial write
 operation is complex than for the B-Tree, which must traverse its structure to
 write the new record to the appropriate location on disk, rebalancing itself and
 rewriting pages as necessary.
-
-## Structure
 
 The LSM-Tree's memory-resident component (also called the memtable) is a mutable
 buffer which serves as the first target for read and write operations. It is
@@ -42,8 +42,6 @@ file and discarding the old tables.
 Deleting a record requires the use of a tombstone, which acts as a flag to
 remove all instances of the key during the reconciliation process.
 
-## Lookups
-
 Due to their immutability, LSM-Trees may contain different versions of data
 across their multiple components (memory-resident and disk-resident tables),
 which necessitates a merge-and-reconcile strategy for performing lookups.
@@ -51,4 +49,23 @@ which necessitates a merge-and-reconcile strategy for performing lookups.
 Merge-iteration takes advantage of the fact that memory-resident and
 disk-resident tables are all sorted to iterate across all sources at once.
 Iterators for each source are loaded into a priority queue implementation such
-as a min-heap
+as a min-heap, which maintains this cascade of invariants. In the event that
+there are multiple values for a given key, we use metadata such as timestamps to
+determine which record should be returned to the client or written during
+compaction.
+
+Compaction is the maintenance process for LSM-Trees which reconciles duplicated
+and tombstoned/deleted keys, reducing disk usage by the disk-resident tables.
+
+Leveled compaction organizes disk-resident tables into "levels", with target
+table sizes and number of tables per level. Compaction occurs as follows:
+- Level 0 consists solely of flushed memtables
+- Once a level exceeds its target number of tables, each of its tables are
+  partitioned according to the key ranges of the proceeding level's tables and
+  merged with the appropriate tables there.
+As each successive layer holds tables exponentially larger than those on the
+preceeding layer, older data gradually makes its way into higher levels.
+
+## Implementation Details
+
+Sorted String Tables (SSTables)
