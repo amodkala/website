@@ -1,11 +1,16 @@
 ---
 import Base from "../layouts/BaseLayout.astro";
-import {Content as Bio} from "../components/text/bio.mdx";
+import Bio from "../components/text/homepage.mdx";
+import Preamble from "../components/text/homepage-preamble.mdx";
 import '@/styles/globals.css';
 ---
 
 <Base title="home">
     <div class="prose dark:prose-invert">
+        <h1>amod kala</h1>
+        <Preamble />
+    </div>
+    <div class="my-5 prose dark:prose-invert">
         <Bio />
     </div>
 </Base>
