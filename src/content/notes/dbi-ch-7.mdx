@@ -66,6 +66,34 @@ table sizes and number of tables per level. Compaction occurs as follows:
 As each successive layer holds tables exponentially larger than those on the
 preceeding layer, older data gradually makes its way into higher levels.
 
+## Read, Write, and Space Amplification
+
+There are certain tradeoffs to be considered when adopting a strategy for the
+compaction of immutable records. Read amplification is the result of searching
+multiple data structures containing the same key to determine the most recent
+value. Write amplification arises from frequent compaction in an attempt to
+reduce the number of duplicate records.
+
 ## Implementation Details
 
-Sorted String Tables (SSTables)
+Sorted String Tables (SSTables) are the data structures used to implement
+disk-resident storage. They consist of index files (which are themselves
+implemented as B-Trees or hash tables) and data files, where the location of a
+record (its offset) within the datafile is what is indexed in the index file
+
+Bloom filters are probabilistic data structures which report either that an item
+is probably in a set, or it is definitely not in the set. The application to
+SSTables in the context of read amplification is obvious, as only those files
+which might contain the target key will be read during the merge-iteration
+process. Implementation-wise, we use a bit array along with hash functions 
+(larger bit arrays reduce the likelihood of hash collisions) as follows:
+- Keys in the SSTable are hashed to produce indices of the bit array, which are
+  set to 1
+- Depending on the length of the bit array, the indices produced by the hash of
+  one key could also be produced by one or multiple other unique keys (hash
+  collision)
+- On lookup, we use the hash function to produce the bit array indices of
+  interest, and for each bloom filter where all of these bits are set we add the
+  corresponding SSTable to our merge-iterator.
+- If any bit array index produced by a key's hash is 0, then it must not be in
+  that SSTable, but if all the bits are 1 then the key might be in the SSTable.

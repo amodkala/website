@@ -1,0 +1,7 @@
+{
+    "description": "distributed database storage engine in Go",
+    "url": "https://github.com/amodkala/database",
+    "posts": [
+        "raft-go"
+    ]
+}
