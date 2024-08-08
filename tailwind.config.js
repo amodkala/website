@@ -2,7 +2,7 @@
 export default {
     content: [
         "./index.html",
-        "./src/**/*.{js,ts,jsx,tsx}",
+        "./src/**/*.{js,ts,jsx,tsx,md,mdx}",
     ],
     theme: {
         extend: {},
@@ -12,4 +12,3 @@ export default {
         preflight: false,
     },
 }
-

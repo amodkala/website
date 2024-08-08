@@ -1,0 +1,26 @@
+import { Outlet, Link } from "react-router-dom";
+import delft from "../images/vermeer-view-of-delft.jpg";
+import resume from "../content/amodkala_resume.pdf";
+
+## Amod Kala
+<img className="w-full h-auto" src={ delft } />
+
+Now
+- Self-studying econometrics, reinforcement learning, and database design
+- Working on an assortment of <Link to="projects">projects</Link>
+- Writing the occasional <Link to="blog">blog</Link> post
+
+Previously
+- Graduated from University of Waterloo
+
+<ul className="pl-0">
+    <li className="inline pr-1.5">
+        <Link to="https://www.linkedin.com/in/amodkala/" target="_blank">LinkedIn</Link>
+    </li>
+    <li className="inline pr-1.5">
+        <Link to="https://github.com/amodkala/" target="_blank">GitHub</Link>
+    </li>
+    <li className="inline pr-1.5">
+        <Link to={ resume } target="_blank">Resume</Link>
+    </li>
+</ul>
