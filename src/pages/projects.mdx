@@ -1,0 +1,30 @@
+import { Outlet, Link } from "react-router-dom";
+
+## Projects
+
+### July 2024
+
+- **Waitlist**  
+Acuity is a popular scheduling service for
+appointment-based small businesses, but they lack a
+native waitlist feature. I used their REST API and Webhook
+integrations along with a simple serverless architecture
+(API Gateway, Lambda, Twilio API) to implement a waitlist
+with SMS notifications for a local business. 
+
+### Earlier
+
+- **Transformer** (<Link to="https://github.com/amodkala/transformer"
+  target="_blank">*code*</Link>)  
+I wrote a decoder-only transformer text classifier in 
+PyTorch for my ML final. Initially trained via Google
+Colab, I later rewrote my train/test/eval code for 
+portability to GPU-enabled VPSes and for model export to
+ONNX format.
+
+- **Raft** (<Link to="https://github.com/amodkala/database"
+  target="_blank">*code*</Link>)  
+In an effort to self-study distributed systems, I 
+implemented a distributed disk-resident log (WAL) with
+eventual consistency provided by a simple implementation of
+the raft consensus algorithm.
