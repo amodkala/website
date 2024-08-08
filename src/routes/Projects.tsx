@@ -1,11 +1,7 @@
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width" />
-        <link rel="stylesheet" href="styles/styles.css" />
-        <title>projects</title>
-    </head>
-    <body>
+import { Outlet, Link } from "react-router-dom";
+
+export default function Projects() {
+    return (
         <div>
             <h2>Projects</h2>
             <div>
@@ -31,8 +27,8 @@
                         <p>
                         <b>Transformer</b> 
                         <em>
-                            (<a href="https://github.com/amodkala/transformer"
-                                target="_blank">code</a>)
+                            (<Link to="https://github.com/amodkala/transformer"
+                                target="_blank">code</Link>)
                         </em><br/>
                         I wrote a decoder-only transformer text classifier in 
                         PyTorch for my ML final. Initially trained via Google
@@ -45,8 +41,8 @@
                         <p>
                         <b>Raft</b>
                         <em>
-                            (<a href="https://github.com/amodkala/database"
-                                target="_blank">code</a>)
+                            (<Link to="https://github.com/amodkala/database"
+                                target="_blank">code</Link>)
                         </em><br/>
                         In an effort to self-study distributed systems, I 
                         implemented a distributed disk-resident log (WAL) with
@@ -57,7 +53,8 @@
                 </ul>
             </div>
             <footer>
-                <a href="index.html">Back to the main site</a>
+                <Link to="/">Back to the main site</Link>
             </footer>
-    </body>
-</html>
+        </div>
+    )
+}
