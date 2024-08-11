@@ -1,27 +1,25 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import {
-  createBrowserRouter,
-  RouterProvider,
-  useParams,
-  lazy,
-} from "react-router-dom";
-import Home from "./routes/Home";
-import Blog from "./routes/Blog";
-import Post from "./routes/Post";
-import Projects from "./routes/Projects";
-import Notes from "./routes/Notes";
-import Note from "./routes/Note";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Page from "./components/Page";
 import "./index.css";
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <Home />,
+        loader: async ({ params }) => {
+            const module = await import(`./content/pages/home.mdx`);
+            return { Content: module.default };
+        },
+        element: <Page />,
     },
     {
         path: "/blog",
-        element: <Blog />
+        loader: async ({ params }) => {
+            const module = await import(`./content/pages/blog.mdx`);
+            return { Content: module.default };
+        },
+        element: <Page />,
     },
     {
         path: "/blog/:post",
@@ -29,15 +27,23 @@ const router = createBrowserRouter([
             const module = await import(`./content/blog/${params.post}.mdx`);
             return { Content: module.default };
         },
-        element: <Post />
+        element: <Page />,
     },
     {
         path: "/projects",
-        element: <Projects />
+        loader: async ({ params }) => {
+            const module = await import(`./content/pages/projects.mdx`);
+            return { Content: module.default };
+        },
+        element: <Page />,
     },
     {
         path: "/notes",
-        element: <Notes />
+        loader: async ({ params }) => {
+            const module = await import(`./content/pages/notes.mdx`);
+            return { Content: module.default };
+        },
+        element: <Page />,
     },
     {
         path: "/notes/:note",
@@ -45,7 +51,7 @@ const router = createBrowserRouter([
             const module = await import(`./content/notes/${params.note}.mdx`);
             return { Content: module.default };
         },
-        element: <Note />
+        element: <Page />,
     },
 ]);
 

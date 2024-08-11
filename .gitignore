@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+.vite/
+src/content/blog/draft-*
 
 # Editor directories and files
 .vscode/*
