@@ -3,10 +3,15 @@ import { createRoot } from 'react-dom/client'
 import {
   createBrowserRouter,
   RouterProvider,
+  useParams,
+  lazy,
 } from "react-router-dom";
 import Home from "./routes/Home";
 import Blog from "./routes/Blog";
+import Post from "./routes/Post";
 import Projects from "./routes/Projects";
+import Notes from "./routes/Notes";
+import Note from "./routes/Note";
 import "./index.css";
 
 const router = createBrowserRouter([
@@ -19,8 +24,28 @@ const router = createBrowserRouter([
         element: <Blog />
     },
     {
+        path: "/blog/:post",
+        loader: async ({ params }) => {
+            const module = await import(`./content/blog/${params.post}.mdx`);
+            return { Content: module.default };
+        },
+        element: <Post />
+    },
+    {
         path: "/projects",
         element: <Projects />
+    },
+    {
+        path: "/notes",
+        element: <Notes />
+    },
+    {
+        path: "/notes/:note",
+        loader: async ({ params }) => {
+            const module = await import(`./content/notes/${params.note}.mdx`);
+            return { Content: module.default };
+        },
+        element: <Note />
     },
 ]);
 
