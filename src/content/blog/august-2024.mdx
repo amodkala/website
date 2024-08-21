@@ -22,8 +22,13 @@ being Toronto-based.
 ### Object storage
 
 Why has S3, and object storage in general, become so ubiquitous? In an effort to
-answer this question for myself, I read through blog posts about multi-tenancy,
-BYOC, and the design of S3. 
+answer this question for myself I read through many blog posts, and the
+consensus seems to be that object storage enables architectural paradigms like
+multi-tenancy and the separation of storage and compute. Ed Huang has a great
+<Link to="https://me.0xffff.me/dbaas1.html" target="_blank">three</Link> <Link
+to="https://me.0xffff.me/dbaas2.html" target="_blank">part</Link> <Link 
+to="https://me.0xffff.me/dbaas3.html" target="_blank">series</Link> on the
+design decisions made while implementing a serverless database.
 
 My favourite posts included the following
 - Jack Vanlightly - <Link 
@@ -48,3 +53,9 @@ in the BYOC model.
 <Link to="https://github.com/slatedb/slatedb" target="_blank">**SlateDB**</Link>
 is an LSM-Tree which persists data to object storage, and is a good excuse for
 me to revisit classics like Kleppmann's DDIA and Petrov's Database Internals.
+
+<Link to="https://turbopuffer.com/" target="_blank">**turbopuffer**</Link> took
+the "database backed by object storage" paradigm and adapted it to the vector
+store use case. Their <Link to="https://turbopuffer.com/architecture"
+target="_blank">documentation</Link> scratches the same database design itch as
+SlateDB's.
