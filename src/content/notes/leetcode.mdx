@@ -1,0 +1,180 @@
+import { Outlet, Link } from "react-router-dom";
+
+## Leetcode
+
+***Wednesday, September 4, 2024***
+
+Doing some last-minute prep for the Google OA that everyone seems to have 
+received this week.
+
+Topics
+- Array techniques (sliding window, two pointer)
+- String problems (palindrome, substring/subsequence, bitwise operations)
+- 1-D dynamic programming
+- Tree problems (distance, traversal)
+- Graph problems (shortest path, number of paths)
+
+<Link to="https://leetcode.com/problems/longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters</Link>  
+One-shotted this solution, basic sliding window technique with a hash table to
+track the last known index of a character
+```python
+def lengthOfLongestSubstring(self, s: str) -> int:
+    ref = {}
+    start, end, ans = 0, 0, 0
+    for i, char in enumerate(s):
+        if char in ref and ref[char] >= start:
+            start = ref[char] + 1
+        if char not in ref or ref[char] < start:
+            ans = max(ans, end - start + 1)
+            end = end + 1
+        ref[char] = i
+    return ans
+```
+<Link to="https://leetcode.com/problems/house-robber/">House Robber</Link>  
+Took a bit longer to grok the DP method of breaking algorithms into recursive
+subproblems and storing intermediate results to save on computation.
+```python
+def rob(self, nums: List[int]) -> int:
+    if len(nums) == 1:
+        return nums[0]
+    i, ans = 2, 0
+    ref = [nums[0], max(nums[0], nums[1])]
+    while i < len(nums):
+        ref.append(max(nums[i] + ref[i-2], ref[i-1]))
+        i = i + 1      
+    return ref[len(nums)-1]
+```
+<Link to="">Container with Most Water</Link>  
+Another simple two-pointer greedy algorithm, O(n) solution
+```python
+def maxArea(self, height: List[int]) -> int:
+    l, r = 0, len(height)-1
+    ans = 0
+    while l != r:
+        ans = max(min(height[l], height[r]) * (r - l), ans)
+        if height[l] < height[r]:
+            l = l + 1
+        else:
+            r = r - 1
+    return ans
+```
+<Link
+  to="https://leetcode.com/problems/binary-tree-level-order-traversal/">Binary
+  Tree Level Order Traversal</Link>  
+Classic BFS solution using tuples to store metadata
+```python
+def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+    if root is None:
+        return []
+    ref = []
+    queue = [(root, 0)]
+    while queue:
+        (node, level) = queue.pop(0)
+        if node is None:
+            continue
+        if len(ref) < level + 1:
+            ref.append([])
+        ref[level].append(node.val)
+        queue.append((node.left, level+1))
+        queue.append((node.right, level+1))
+    return ref
+```
+<Link to="https://leetcode.com/problems/number-of-islands/">Number of
+  Islands</Link>  
+Another BFS problem, I want to be comfortable implementing graph traversal
+algorithms independent of any problem-specific logic
+```python
+def numIslands(self, grid: List[List[str]]) -> int:
+    def bfs(r, c):
+        moves = [(-1,0),(1,0),(0,-1),(0,1)]
+        queue = [(r,c)]
+        visited = set()
+        visited.add((r,c))
+        while queue:
+            (r, c) = queue.pop(0)
+            grid[r][c] = "0"
+            for (x, y) in moves:
+                valid = (r+y >= 0 and r+y < len(grid)) and (c+x >= 0 and c+x < len(grid[0]))
+                if valid and grid[r+y][c+x] == "1" and (r+y,c+x) not in visited:
+                    queue.append((r+y,c+x))
+                    visited.add((r+y,c+x))
+
+    ans = 0
+    for row in range(len(grid)):
+        for column in range(len(grid[0])):
+            if grid[row][column] == "1":
+                ans = ans + 1
+                bfs(row, column)
+    return ans
+```
+<Link to="https://leetcode.com/problems/flood-fill/">Flood Fill</Link>  
+This is the easiest BFS problem that I'm aware exists on the Leetcode platform.
+Good for practicing muscle memory
+```python
+def floodFill(self, image: List[List[int]], sr: int, sc: int, color: int) -> List[List[int]]:
+    start = image[sr][sc]
+    if color == start:
+        return image
+    moves = [(-1,0),(1,0),(0,-1),(0,1)]
+    visited = set()
+    queue = [(sr, sc)]
+    visited.add((sr,sc))
+    while queue:
+        (r,c) = queue.pop(0)
+        image[r][c] = color
+        for (x,y) in moves:
+            valid = (r+y >= 0 and r+y < len(image)) and (c+x >= 0 and c+x < len(image[0]))
+            if valid and image[r+y][c+x] == start and (r+y,c+x) not in visited:
+                queue.append((r+y,c+x))
+                visited.add((r+y,c+x))
+    return image
+```
+<Link
+  to="https://leetcode.com/problems/longest-increasing-subsequence/">Longest
+  Increasing Subsequence</Link>  
+One of the classic DP problems, I ultimately needed some help with deriving the
+O(n^2) solution below, though I am aware that an O(nlogn) solution exists
+```python
+def lengthOfLIS(self, nums: List[int]) -> int:
+    ref = [1]
+    i = 1
+    while i < len(nums):
+        j, val = 0, 0
+        while j < i:
+            if nums[j] < nums[i]:
+                val = max(val, ref[j])
+            j = j + 1
+        ref.append(1 + val)
+        i = i + 1
+        
+    ans = 0
+    for LIS in ref:
+        ans = max(ans, LIS)
+    return ans
+```
+<Link to="https://leetcode.com/problems/climbing-stairs/">Climbing Stairs</Link>  
+I had to go back and review this problem because the intuition escaped me. For
+posterity, ref[i-1] is the number of ways to reach step i with one step and 
+likewise for ref[i-2] and two steps. Their sum is thus the number of ways to
+reach step i with either one or two steps (per the problem description) and so
+we simply need to calculate ref[n] (minus one to account for the step/index
+mismatch)
+```python
+def climbStairs(self, n: int) -> int:
+    ref = [1,2]
+    for i in range(2,n):
+        ref.append(ref[i-1] + ref[i-2])
+    return ref[n-1]
+```
+<Link to="https://leetcode.com/problems/min-cost-climbing-stairs/">Min Cost
+Climbing Stairs</Link>  
+This variation on the previous problem was way more intuitive to me  
+```python
+def minCostClimbingStairs(self, cost: List[int]) -> int:
+    ans, i = 0, 2
+    ref = cost[:2]
+    while i < len(cost):
+        ref.append(cost[i] + min(ref[i-1], ref[i-2]))
+        i += 1
+    return min(ref[i-1], ref[i-2])
+```
