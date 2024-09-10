@@ -1,4 +1,5 @@
 import { Outlet, Link } from "react-router-dom";
+import Collapsible from "../../components/Collapsible";
 
 ## Leetcode
 
@@ -18,6 +19,8 @@ Topics
 One-shotted this solution, basic sliding window technique with a hash table to
 track the last known index of a character
 
+<Collapsible>
+
 ```python
 def lengthOfLongestSubstring(self, s: str) -> int:
     ref = {}
@@ -31,10 +34,13 @@ def lengthOfLongestSubstring(self, s: str) -> int:
         ref[char] = i
     return ans
 ```
+</Collapsible>
 
 <Link to="https://leetcode.com/problems/house-robber/">House Robber</Link>  
 Took a bit longer to grok the DP method of breaking algorithms into recursive
 subproblems and storing intermediate results to save on computation.
+
+<Collapsible>
 
 ```python
 def rob(self, nums: List[int]) -> int:
@@ -47,9 +53,12 @@ def rob(self, nums: List[int]) -> int:
         i = i + 1      
     return ref[len(nums)-1]
 ```
+</Collapsible>
 
 <Link to="">Container with Most Water</Link>  
 Another simple two-pointer greedy algorithm, O(n) solution
+
+<Collapsible>
 
 ```python
 def maxArea(self, height: List[int]) -> int:
@@ -63,11 +72,14 @@ def maxArea(self, height: List[int]) -> int:
             r = r - 1
     return ans
 ```
+</Collapsible>
 
 <Link
   to="https://leetcode.com/problems/binary-tree-level-order-traversal/">Binary
   Tree Level Order Traversal</Link>  
 Classic BFS solution using tuples to store metadata
+
+<Collapsible>
 
 ```python
 def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
@@ -86,11 +98,14 @@ def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
         queue.append((node.right, level+1))
     return ref
 ```
+</Collapsible>
 
 <Link to="https://leetcode.com/problems/number-of-islands/">Number of
   Islands</Link>  
 Another BFS problem, I want to be comfortable implementing graph traversal
 algorithms independent of any problem-specific logic
+
+<Collapsible>
 
 ```python
 def numIslands(self, grid: List[List[str]]) -> int:
@@ -116,10 +131,13 @@ def numIslands(self, grid: List[List[str]]) -> int:
                 bfs(row, column)
     return ans
 ```
+</Collapsible>
 
 <Link to="https://leetcode.com/problems/flood-fill/">Flood Fill</Link>  
 This is the easiest BFS problem that I'm aware exists on the Leetcode platform.
 Good for practicing muscle memory
+
+<Collapsible>
 
 ```python
 def floodFill(self, image: List[List[int]], sr: int, sc: int, color: int) -> List[List[int]]:
@@ -140,12 +158,15 @@ def floodFill(self, image: List[List[int]], sr: int, sc: int, color: int) -> Lis
                 visited.add((r+y,c+x))
     return image
 ```
+</Collapsible>
 
 <Link
   to="https://leetcode.com/problems/longest-increasing-subsequence/">Longest
   Increasing Subsequence</Link>  
 One of the classic DP problems, I ultimately needed some help with deriving the
 O(n^2) solution below, though I am aware that an O(nlogn) solution exists
+
+<Collapsible>
 
 ```python
 def lengthOfLIS(self, nums: List[int]) -> int:
@@ -165,6 +186,7 @@ def lengthOfLIS(self, nums: List[int]) -> int:
         ans = max(ans, LIS)
     return ans
 ```
+</Collapsible>
 
 <Link to="https://leetcode.com/problems/climbing-stairs/">Climbing Stairs</Link>  
 I had to go back and review this problem because the intuition escaped me. For
@@ -174,6 +196,8 @@ reach step i with either one or two steps (per the problem description) and so
 we simply need to calculate ref[n] (minus one to account for the step/index
 mismatch)
 
+<Collapsible>
+
 ```python
 def climbStairs(self, n: int) -> int:
     ref = [1,2]
@@ -181,10 +205,13 @@ def climbStairs(self, n: int) -> int:
         ref.append(ref[i-1] + ref[i-2])
     return ref[n-1]
 ```
+</Collapsible>
 
 <Link to="https://leetcode.com/problems/min-cost-climbing-stairs/">Min Cost
 Climbing Stairs</Link>  
 This variation on the previous problem was way more intuitive to me  
+
+<Collapsible>
 
 ```python
 def minCostClimbingStairs(self, cost: List[int]) -> int:
@@ -195,6 +222,8 @@ def minCostClimbingStairs(self, cost: List[int]) -> int:
         i += 1
     return min(ref[i-1], ref[i-2])
 ```
+</Collapsible>
+
 <Link to="https://leetcode.com/problems/merge-k-sorted-lists/">Merge K Sorted
 Lists</Link>    
 This was the first hard problem I completed, on my first attempt too! In all
@@ -202,6 +231,8 @@ fairness I was already familiar with the design of merge iterators thanks to
 Alex Petrov's <Link to="https://www.databass.dev/">Database Internals</Link>,
 but the requirement that I return the merged list as a linked list was a welcome
 opportunity to refresh my knowledge of how to work with that data structure
+
+<Collapsible>
 
 ```python
 def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
@@ -230,16 +261,19 @@ def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
             ref[nextNode.val] += 1
     return head.next
 ```
+</Collapsible>
 
 <Link to="https://leetcode.com/problems/group-anagrams/">Group Anagrams</Link>  
 I previously solved this problem by sorting each string, but mapping characters
 to prime numbers is O(n) instead of O(nlogn)
 
+<Collapsible>
+
 ```python
 def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
     primes = [
-        2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59,
-        61, 67, 71, 73, 79, 83, 89, 97, 101
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 
+        43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101
     ]
     ref = {}
     for s in strs:
@@ -251,3 +285,51 @@ def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
         ref[val].append(s)
     return [words for (k, words) in ref.items()]
 ```
+</Collapsible>
+
+<Link to="https://leetcode.com/problems/longest-consecutive-sequence/">Longest
+Consecutive Sequence</Link>  
+I tried to be clever here and store previously computed values in a hash table,
+which I discovered was necessary to avoid a TLE without modifying the algorithm,
+however the space overhead is quite high (worse than ~95% of other submissions)
+so I doubt it would be acceptable in an interview
+
+<Collapsible>
+
+```python
+def longestConsecutive(self, nums: List[int]) -> int:
+    ref = {}
+    s = set(nums)
+    ans = 0
+    for num in s:
+        length = 1
+        prev = num - 1
+        while prev in s:
+            if prev in ref:
+                length += ref[prev]
+                break
+            length += 1
+            prev -= 1
+        ref[num] = length
+        ans = max(ans, length)
+    return ans
+```
+</Collapsible>
+
+<Link to="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/">Best
+Time to Buy and Sell Stock</Link>  
+Revisited this classic since I read that Google tends to ask array/string
+questions in their online assessment and I didn't want to get caught off guard.
+I actually haven't done this one in forever so I got to rederive the solution
+
+<Collapsible>
+
+```python
+def maxProfit(self, prices: List[int]) -> int:
+    lowest, ans = prices[0], 0
+    for price in prices:
+        lowest = min(lowest, price)
+        ans = max(ans, price - lowest)
+    return ans
+```
+</Collapsible>
