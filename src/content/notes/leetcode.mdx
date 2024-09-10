@@ -17,6 +17,7 @@ Topics
 <Link to="https://leetcode.com/problems/longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters</Link>  
 One-shotted this solution, basic sliding window technique with a hash table to
 track the last known index of a character
+
 ```python
 def lengthOfLongestSubstring(self, s: str) -> int:
     ref = {}
@@ -30,9 +31,11 @@ def lengthOfLongestSubstring(self, s: str) -> int:
         ref[char] = i
     return ans
 ```
+
 <Link to="https://leetcode.com/problems/house-robber/">House Robber</Link>  
 Took a bit longer to grok the DP method of breaking algorithms into recursive
 subproblems and storing intermediate results to save on computation.
+
 ```python
 def rob(self, nums: List[int]) -> int:
     if len(nums) == 1:
@@ -44,8 +47,10 @@ def rob(self, nums: List[int]) -> int:
         i = i + 1      
     return ref[len(nums)-1]
 ```
+
 <Link to="">Container with Most Water</Link>  
 Another simple two-pointer greedy algorithm, O(n) solution
+
 ```python
 def maxArea(self, height: List[int]) -> int:
     l, r = 0, len(height)-1
@@ -58,10 +63,12 @@ def maxArea(self, height: List[int]) -> int:
             r = r - 1
     return ans
 ```
+
 <Link
   to="https://leetcode.com/problems/binary-tree-level-order-traversal/">Binary
   Tree Level Order Traversal</Link>  
 Classic BFS solution using tuples to store metadata
+
 ```python
 def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
     if root is None:
@@ -79,10 +86,12 @@ def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
         queue.append((node.right, level+1))
     return ref
 ```
+
 <Link to="https://leetcode.com/problems/number-of-islands/">Number of
   Islands</Link>  
 Another BFS problem, I want to be comfortable implementing graph traversal
 algorithms independent of any problem-specific logic
+
 ```python
 def numIslands(self, grid: List[List[str]]) -> int:
     def bfs(r, c):
@@ -107,9 +116,11 @@ def numIslands(self, grid: List[List[str]]) -> int:
                 bfs(row, column)
     return ans
 ```
+
 <Link to="https://leetcode.com/problems/flood-fill/">Flood Fill</Link>  
 This is the easiest BFS problem that I'm aware exists on the Leetcode platform.
 Good for practicing muscle memory
+
 ```python
 def floodFill(self, image: List[List[int]], sr: int, sc: int, color: int) -> List[List[int]]:
     start = image[sr][sc]
@@ -129,11 +140,13 @@ def floodFill(self, image: List[List[int]], sr: int, sc: int, color: int) -> Lis
                 visited.add((r+y,c+x))
     return image
 ```
+
 <Link
   to="https://leetcode.com/problems/longest-increasing-subsequence/">Longest
   Increasing Subsequence</Link>  
 One of the classic DP problems, I ultimately needed some help with deriving the
 O(n^2) solution below, though I am aware that an O(nlogn) solution exists
+
 ```python
 def lengthOfLIS(self, nums: List[int]) -> int:
     ref = [1]
@@ -152,6 +165,7 @@ def lengthOfLIS(self, nums: List[int]) -> int:
         ans = max(ans, LIS)
     return ans
 ```
+
 <Link to="https://leetcode.com/problems/climbing-stairs/">Climbing Stairs</Link>  
 I had to go back and review this problem because the intuition escaped me. For
 posterity, ref[i-1] is the number of ways to reach step i with one step and 
@@ -159,6 +173,7 @@ likewise for ref[i-2] and two steps. Their sum is thus the number of ways to
 reach step i with either one or two steps (per the problem description) and so
 we simply need to calculate ref[n] (minus one to account for the step/index
 mismatch)
+
 ```python
 def climbStairs(self, n: int) -> int:
     ref = [1,2]
@@ -166,9 +181,11 @@ def climbStairs(self, n: int) -> int:
         ref.append(ref[i-1] + ref[i-2])
     return ref[n-1]
 ```
+
 <Link to="https://leetcode.com/problems/min-cost-climbing-stairs/">Min Cost
 Climbing Stairs</Link>  
 This variation on the previous problem was way more intuitive to me  
+
 ```python
 def minCostClimbingStairs(self, cost: List[int]) -> int:
     ans, i = 0, 2
@@ -177,4 +194,60 @@ def minCostClimbingStairs(self, cost: List[int]) -> int:
         ref.append(cost[i] + min(ref[i-1], ref[i-2]))
         i += 1
     return min(ref[i-1], ref[i-2])
+```
+<Link to="https://leetcode.com/problems/merge-k-sorted-lists/">Merge K Sorted
+Lists</Link>    
+This was the first hard problem I completed, on my first attempt too! In all
+fairness I was already familiar with the design of merge iterators thanks to
+Alex Petrov's <Link to="https://www.databass.dev/">Database Internals</Link>,
+but the requirement that I return the merged list as a linked list was a welcome
+opportunity to refresh my knowledge of how to work with that data structure
+
+```python
+def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+    heap = []
+    head = ListNode()
+    prev = head
+    ref = {}
+    for node in lists:
+        if node is not None:
+            if node.val not in ref:
+                ref[node.val] = 0
+            heappush(heap, (node.val, ref[node.val], node.next))
+            ref[node.val] += 1
+    
+    while heap:
+        (value, _, nextNode) = heappop(heap)
+        newNode = ListNode()
+        newNode.val = value
+        newNode.next = None
+        prev.next = newNode
+        prev = prev.next
+        if nextNode is not None:
+            if nextNode.val not in ref:
+                ref[nextNode.val] = 0
+            heappush(heap, (nextNode.val, ref[nextNode.val], nextNode.next))
+            ref[nextNode.val] += 1
+    return head.next
+```
+
+<Link to="https://leetcode.com/problems/group-anagrams/">Group Anagrams</Link>  
+I previously solved this problem by sorting each string, but mapping characters
+to prime numbers is O(n) instead of O(nlogn)
+
+```python
+def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+    primes = [
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59,
+        61, 67, 71, 73, 79, 83, 89, 97, 101
+    ]
+    ref = {}
+    for s in strs:
+        val = 1
+        for c in s:
+            val *= primes[ord(c) - ord('a')]
+        if val not in ref:
+            ref[val] = []
+        ref[val].append(s)
+    return [words for (k, words) in ref.items()]
 ```
