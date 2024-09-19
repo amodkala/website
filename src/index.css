@@ -1,4 +1,4 @@
-@import 'highlight.js/styles/github.css';
+@import url('highlight.js/styles/github.css');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
