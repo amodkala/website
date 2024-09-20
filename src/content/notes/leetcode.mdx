@@ -339,9 +339,10 @@ def maxProfit(self, prices: List[int]) -> int:
 Some notes on Google's snapshot coding assignment, which I wrote yesterday:
 - The assignment asks candidates to solve two coding problems in 90 minutes,
   providing your own test cases to run your code against
-- I'd say that the problems themselves were at the level of a Leetcode Easy (see
-  "Best Time to Buy and Sell Stock" above), though one question explicitly asked
-  for an efficient solution while the other placed more emphasis on correctness
+- I'd say that the problems themselves were at the level of a Leetcode Easy
+  (scratch that, apparently one of the questions is on Leetcode as a "hard"
+  problem), though one question explicitly asked for an efficient solution while
+  the other placed more emphasis on correctness
 - I managed to provide optimal solutions for both problems, tests for all the 
   edge cases I could think of, and time + space complexity analysis.
 
@@ -354,3 +355,153 @@ My advice for applicants writing this OA in the future is this:
   spaces) and syntax highlighting, that's it. If you're used to writing code
   with line numbers, vim keybinds, or even dark mode you'd be shocked at how
   much of a debuff it is to go without those features. 
+
+***Sunday, September 15, 2024***
+
+More Leetcode prep.
+
+<Link
+to="https://leetcode.com/problems/nearest-exit-from-entrance-in-maze/">Nearest
+Exit From Entrance in Maze</Link>  
+Another simple BFS problem with some slight optimisations. As soon as a solution
+is found you can return it instead of ensuring it is the minimum such value,
+since the nature of BFS implies that the first solution found is the nearest.
+The other optimisation is to simply update maze spaces to be inaccessible
+instead of maintaining a set of visited spaces. In my initial solution below I
+implemented the first optimisation but not the second.
+
+<Collapsible>
+
+```python
+def nearestExit(self, maze: List[List[str]], entrance: List[int]) -> int:
+    moves = [(-1,0),(1,0),(0,-1),(0,1)]
+    visited = set()
+    queue = [(entrance[0], entrance[1], 0)]
+    visited.add((entrance[0], entrance[1]))
+    while queue:
+        (r, c, steps) = queue.pop(0)
+        if [r,c] != entrance and ((r == 0 or r == len(maze) - 1) or (c == 0 or c == len(maze[0]) - 1)):
+            return steps
+        for (x, y) in moves:
+            valid = (r+y >= 0 and r+y < len(maze)) and (c+x >= 0 and c+x < len(maze[0]))
+            if valid and (r+y, c+x) not in visited and maze[r+y][c+x] == ".":
+                queue.append((r+y,c+x,steps+1))
+                visited.add((r+y,c+x))
+    return -1
+```
+</Collapsible>
+
+<Link to="https://leetcode.com/problems/longest-common-subsequence/">Longest
+Common Subsequence</Link>  
+I had to reference a few solutions before solving the problem myself, which I
+consider a failure, but hopefully I will be able to recognize the pattern for
+future problems.
+
+<Collapsible>
+
+```python
+def longestCommonSubsequence(self, text1: str, text2: str) -> int:
+    m, n = len(text1), len(text2)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if text1[i-1] == text2[j-1]:
+                dp[i][j] = 1 + dp[i-1][j-1]
+            else:
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+    return dp[m][n]
+```
+</Collapsible>
+
+<Link to="https://leetcode.com/problems/binary-tree-maximum-path-sum/">Binary
+Tree Maximum Path Sum</Link>  
+Quick and dirty recursive solution. Much like DP problems, breaking the problem
+down into the smallest recursive subproblem possible is an effective strategy. 
+Here, that subproblem boiled down to "for each node, what is the max path sum 
+with root at or below this node, and what is the maximum contribution to a 
+solution with root above this node".
+
+<Collapsible>
+
+```python
+def maxPathSum(self, root: Optional[TreeNode]) -> int:
+    def helper(root) -> (int, int):
+        if root is None:
+            return (-1000, -1000)
+
+        (left_highest, left_path) = helper(root.left)
+        (right_highest, right_path) = helper(root.right)
+
+        curr_path = root.val + max(0, left_path, right_path)
+        curr_highest = max(curr_path, root.val + left_path + right_path, left_highest, right_highest)
+
+        return (curr_highest, curr_path)
+
+    (highest, _) = helper(root)
+    return highest
+```
+</Collapsible>
+
+<Link to="https://leetcode.com/problems/validate-binary-search-tree/">Validate
+Binary Search Tree</Link>  
+Easy recursive solution. I probably did this in Racket for a CS 135 assignment
+back in the day.
+
+<Collapsible>
+
+```python
+def isValidBST(self, root: Optional[TreeNode]) -> bool:
+    def helper(root, highest, lowest) -> bool:
+        if root is None:
+            return True
+        return (
+            root.val < highest and 
+            root.val > lowest and 
+            helper(root.left, root.val, lowest) and 
+            helper(root.right, highest, root.val)
+        )
+
+    return helper(root, (2 ** 31) + 1, (-2 ** 31) - 1)
+```
+</Collapsible>
+
+<Link
+to="https://leetcode.com/problems/minimum-number-of-increments-on-subarrays-to-form-a-target-array/">Minimum 
+Number of Increments on Subarrays to Form a Target Array</Link>  
+I'd solved this question before, but even still I hardly think it qualifies as a
+"hard" problem. The intuition behind the O(n) solution is that when the target
+at the current position is less than or equal to the target at the previous
+position, the current position's target could be reached using the same moves as
+the previous position, so no need to add to the count. When the current
+position's target is greater than the previous position, we need target[i] -
+target[i-1] additional moves, so we add that to the total.
+
+<Collapsible>
+
+```python
+def minNumberOperations(self, target: List[int]) -> int:
+    ans = target[0]
+    for i in range(1, len(target)):
+        if target[i] > target[i-1]:
+            ans += target[i] - target[i-1]
+    return ans
+```
+</Collapsible>
+
+<Link to="https://leetcode.com/problems/unique-paths/">Unique Paths</Link>  
+I used a 2-D DP table to develop my bottom-up solution. This is similar to the
+Climbing Steps problem in that since we can only move down or right, the number
+of unique paths to a position is the number of unique paths to get above that
+position plus the number of unique paths to get to the left of the position.
+
+<Collapsible>
+
+```python
+def uniquePaths(self, m: int, n: int) -> int:
+    ref = [[1] * n for _ in range(m)]
+    for r in range(1, m):
+        for c in range(1, n):
+            ref[r][c] = ref[r-1][c] + ref[r][c-1]
+    return ref[m-1][n-1]
+```
+</Collapsible>
