@@ -3,19 +3,14 @@ import Collapsible from "../../components/Collapsible";
 
 ## Leetcode
 
+- <Link to="https://midnightsimon.com/tips.html" target="_blank">Useful algorithms to
+  know</Link>
+- <Link to="https://cses.fi/book/book.pdf" target="_blank">Competitive Programmer's
+  Handbook</Link>
+
 ***Wednesday, September 4, 2024***
 
-Doing some last-minute prep for the Google OA that everyone seems to have 
-received this week.
-
-Topics
-- Array techniques (sliding window, two pointer)
-- String problems (palindrome, substring/subsequence, bitwise operations)
-- 1-D dynamic programming
-- Tree problems (distance, traversal)
-- Graph problems (shortest path, number of paths)
-
-<Link to="https://leetcode.com/problems/longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters</Link>  
+<Link to="https://leetcode.com/problems/longest-substring-without-repeating-characters/" target="_blank">Longest Substring Without Repeating Characters</Link>  
 One-shotted this solution, basic sliding window technique with a hash table to
 track the last known index of a character
 
@@ -36,7 +31,7 @@ def lengthOfLongestSubstring(self, s: str) -> int:
 ```
 </Collapsible>
 
-<Link to="https://leetcode.com/problems/house-robber/">House Robber</Link>  
+<Link to="https://leetcode.com/problems/house-robber/" target="_blank">House Robber</Link>  
 Took a bit longer to grok the DP method of breaking algorithms into recursive
 subproblems and storing intermediate results to save on computation.
 
@@ -55,7 +50,7 @@ def rob(self, nums: List[int]) -> int:
 ```
 </Collapsible>
 
-<Link to="">Container with Most Water</Link>  
+<Link to="https://leetcode.com/problems/container-with-most-water" target="_blank">Container with Most Water</Link>  
 Another simple two-pointer greedy algorithm, O(n) solution
 
 <Collapsible>
@@ -75,8 +70,8 @@ def maxArea(self, height: List[int]) -> int:
 </Collapsible>
 
 <Link
-  to="https://leetcode.com/problems/binary-tree-level-order-traversal/">Binary
-  Tree Level Order Traversal</Link>  
+  to="https://leetcode.com/problems/binary-tree-level-order-traversal/"
+  target="_blank">Binary Tree Level Order Traversal</Link>  
 Classic BFS solution using tuples to store metadata
 
 <Collapsible>
@@ -100,7 +95,7 @@ def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
 ```
 </Collapsible>
 
-<Link to="https://leetcode.com/problems/number-of-islands/">Number of
+<Link to="https://leetcode.com/problems/number-of-islands/" target="_blank">Number of
   Islands</Link>  
 Another BFS problem, I want to be comfortable implementing graph traversal
 algorithms independent of any problem-specific logic
@@ -133,7 +128,7 @@ def numIslands(self, grid: List[List[str]]) -> int:
 ```
 </Collapsible>
 
-<Link to="https://leetcode.com/problems/flood-fill/">Flood Fill</Link>  
+<Link to="https://leetcode.com/problems/flood-fill/" target="_blank">Flood Fill</Link>  
 This is the easiest BFS problem that I'm aware exists on the Leetcode platform.
 Good for practicing muscle memory
 
@@ -161,8 +156,8 @@ def floodFill(self, image: List[List[int]], sr: int, sc: int, color: int) -> Lis
 </Collapsible>
 
 <Link
-  to="https://leetcode.com/problems/longest-increasing-subsequence/">Longest
-  Increasing Subsequence</Link>  
+  to="https://leetcode.com/problems/longest-increasing-subsequence/"
+  target="_blank">Longest Increasing Subsequence</Link>  
 One of the classic DP problems, I ultimately needed some help with deriving the
 O(n^2) solution below, though I am aware that an O(nlogn) solution exists
 
@@ -170,25 +165,18 @@ O(n^2) solution below, though I am aware that an O(nlogn) solution exists
 
 ```python
 def lengthOfLIS(self, nums: List[int]) -> int:
-    ref = [1]
-    i = 1
-    while i < len(nums):
-        j, val = 0, 0
-        while j < i:
+    ans = 1
+    ref = [1] * len(nums)
+    for i in range(len(nums)):
+        for j in range(i):
             if nums[j] < nums[i]:
-                val = max(val, ref[j])
-            j = j + 1
-        ref.append(1 + val)
-        i = i + 1
-        
-    ans = 0
-    for LIS in ref:
-        ans = max(ans, LIS)
+                ref[i] = max(ref[i], ref[j] + 1)
+        ans = max(ans, ref[i])
     return ans
 ```
 </Collapsible>
 
-<Link to="https://leetcode.com/problems/climbing-stairs/">Climbing Stairs</Link>  
+<Link to="https://leetcode.com/problems/climbing-stairs/" target="_blank">Climbing Stairs</Link>  
 I had to go back and review this problem because the intuition escaped me. For
 posterity, ref[i-1] is the number of ways to reach step i with one step and 
 likewise for ref[i-2] and two steps. Their sum is thus the number of ways to
@@ -207,7 +195,7 @@ def climbStairs(self, n: int) -> int:
 ```
 </Collapsible>
 
-<Link to="https://leetcode.com/problems/min-cost-climbing-stairs/">Min Cost
+<Link to="https://leetcode.com/problems/min-cost-climbing-stairs/" target="_blank">Min Cost
 Climbing Stairs</Link>  
 This variation on the previous problem was way more intuitive to me  
 
@@ -224,11 +212,11 @@ def minCostClimbingStairs(self, cost: List[int]) -> int:
 ```
 </Collapsible>
 
-<Link to="https://leetcode.com/problems/merge-k-sorted-lists/">Merge K Sorted
+<Link to="https://leetcode.com/problems/merge-k-sorted-lists/" target="_blank">Merge K Sorted
 Lists</Link>    
 This was the first hard problem I completed, on my first attempt too! In all
 fairness I was already familiar with the design of merge iterators thanks to
-Alex Petrov's <Link to="https://www.databass.dev/">Database Internals</Link>,
+Alex Petrov's <Link to="https://www.databass.dev/" target="_blank">Database Internals</Link>,
 but the requirement that I return the merged list as a linked list was a welcome
 opportunity to refresh my knowledge of how to work with that data structure
 
@@ -263,7 +251,7 @@ def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
 ```
 </Collapsible>
 
-<Link to="https://leetcode.com/problems/group-anagrams/">Group Anagrams</Link>  
+<Link to="https://leetcode.com/problems/group-anagrams/" target="_blank">Group Anagrams</Link>  
 I previously solved this problem by sorting each string, but mapping characters
 to prime numbers is O(n) instead of O(nlogn)
 
@@ -287,7 +275,7 @@ def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
 ```
 </Collapsible>
 
-<Link to="https://leetcode.com/problems/longest-consecutive-sequence/">Longest
+<Link to="https://leetcode.com/problems/longest-consecutive-sequence/" target="_blank">Longest
 Consecutive Sequence</Link>  
 I tried to be clever here and store previously computed values in a hash table,
 which I discovered was necessary to avoid a TLE without modifying the algorithm,
@@ -316,7 +304,7 @@ def longestConsecutive(self, nums: List[int]) -> int:
 ```
 </Collapsible>
 
-<Link to="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/">Best
+<Link to="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/" target="_blank">Best
 Time to Buy and Sell Stock</Link>  
 Revisited this classic since I read that Google tends to ask array/string
 questions in their online assessment and I didn't want to get caught off guard.
@@ -334,35 +322,11 @@ def maxProfit(self, prices: List[int]) -> int:
 ```
 </Collapsible>
 
-***Thursday, September 12, 2024***
-
-Some notes on Google's snapshot coding assignment, which I wrote yesterday:
-- The assignment asks candidates to solve two coding problems in 90 minutes,
-  providing your own test cases to run your code against
-- I'd say that the problems themselves were at the level of a Leetcode Easy
-  (scratch that, apparently one of the questions is on Leetcode as a "hard"
-  problem), though one question explicitly asked for an efficient solution while
-  the other placed more emphasis on correctness
-- I managed to provide optimal solutions for both problems, tests for all the 
-  edge cases I could think of, and time + space complexity analysis.
-
-My advice for applicants writing this OA in the future is this:
-- Simulate the testing environment as closely as possible during your prep. I
-  think I spent more than half of the time either not writing code or making
-  simple mistakes because of how nervous I was. This includes context switching
-  between two problems, budgeting time, and using a timer.
-- Use your own editor. Seriously. The provided editor has auto-indentation (2 
-  spaces) and syntax highlighting, that's it. If you're used to writing code
-  with line numbers, vim keybinds, or even dark mode you'd be shocked at how
-  much of a debuff it is to go without those features. 
-
 ***Sunday, September 15, 2024***
 
-More Leetcode prep.
-
 <Link
-to="https://leetcode.com/problems/nearest-exit-from-entrance-in-maze/">Nearest
-Exit From Entrance in Maze</Link>  
+to="https://leetcode.com/problems/nearest-exit-from-entrance-in-maze/"
+target="_blank">Nearest Exit From Entrance in Maze</Link>  
 Another simple BFS problem with some slight optimisations. As soon as a solution
 is found you can return it instead of ensuring it is the minimum such value,
 since the nature of BFS implies that the first solution found is the nearest.
@@ -391,7 +355,7 @@ def nearestExit(self, maze: List[List[str]], entrance: List[int]) -> int:
 ```
 </Collapsible>
 
-<Link to="https://leetcode.com/problems/longest-common-subsequence/">Longest
+<Link to="https://leetcode.com/problems/longest-common-subsequence/" target="_blank">Longest
 Common Subsequence</Link>  
 I had to reference a few solutions before solving the problem myself, which I
 consider a failure, but hopefully I will be able to recognize the pattern for
@@ -413,7 +377,7 @@ def longestCommonSubsequence(self, text1: str, text2: str) -> int:
 ```
 </Collapsible>
 
-<Link to="https://leetcode.com/problems/binary-tree-maximum-path-sum/">Binary
+<Link to="https://leetcode.com/problems/binary-tree-maximum-path-sum/" target="_blank">Binary
 Tree Maximum Path Sum</Link>  
 Quick and dirty recursive solution. Much like DP problems, breaking the problem
 down into the smallest recursive subproblem possible is an effective strategy. 
@@ -442,7 +406,7 @@ def maxPathSum(self, root: Optional[TreeNode]) -> int:
 ```
 </Collapsible>
 
-<Link to="https://leetcode.com/problems/validate-binary-search-tree/">Validate
+<Link to="https://leetcode.com/problems/validate-binary-search-tree/" target="_blank">Validate
 Binary Search Tree</Link>  
 Easy recursive solution. I probably did this in Racket for a CS 135 assignment
 back in the day.
@@ -466,14 +430,15 @@ def isValidBST(self, root: Optional[TreeNode]) -> bool:
 </Collapsible>
 
 <Link
-to="https://leetcode.com/problems/minimum-number-of-increments-on-subarrays-to-form-a-target-array/">Minimum 
-Number of Increments on Subarrays to Form a Target Array</Link>  
+to="https://leetcode.com/problems/minimum-number-of-increments-on-subarrays-to-form-a-target-array/"
+target="_blank">Minimum Number of Increments on Subarrays to Form a Target
+Array</Link>  
 I'd solved this question before, but even still I hardly think it qualifies as a
-"hard" problem. The intuition behind the O(n) solution is that when the target
-at the current position is less than or equal to the target at the previous
+"hard" problem. The intuition behind the O(n) solution is that when the target 
+at the current position is less than or equal to the target at the previous 
 position, the current position's target could be reached using the same moves as
-the previous position, so no need to add to the count. When the current
-position's target is greater than the previous position, we need target[i] -
+the previous position, so no need to add to the count. When the current 
+position's target is greater than the previous position, we need target[i] - 
 target[i-1] additional moves, so we add that to the total.
 
 <Collapsible>
@@ -488,7 +453,7 @@ def minNumberOperations(self, target: List[int]) -> int:
 ```
 </Collapsible>
 
-<Link to="https://leetcode.com/problems/unique-paths/">Unique Paths</Link>  
+<Link to="https://leetcode.com/problems/unique-paths/" target="_blank">Unique Paths</Link>  
 I used a 2-D DP table to develop my bottom-up solution. This is similar to the
 Climbing Steps problem in that since we can only move down or right, the number
 of unique paths to a position is the number of unique paths to get above that
@@ -503,5 +468,75 @@ def uniquePaths(self, m: int, n: int) -> int:
         for c in range(1, n):
             ref[r][c] = ref[r-1][c] + ref[r][c-1]
     return ref[m-1][n-1]
+```
+</Collapsible>
+
+<Link to="https://leetcode.com/problems/course-schedule-ii/" target="_blank">Course Schedule II</Link>  
+It took me an embarrassingly long time to implement the topological sort
+algorithm, despite understanding the algorithm straight away. I tried to avoid
+the use of a state array or a boolean "has_cycle" variable but couldn't figure
+out a cleaner implementation. Ah well.
+
+<Collapsible>
+
+```python
+def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
+    state, graph, ans = [0] * numCourses, [[] for _ in range(numCourses)], []
+    for [course, prereq] in prerequisites:
+        graph[prereq].append(course)
+    
+    def dfs(course):
+        if state[course] == 2:
+            return False
+        if state[course] == 1:
+            return True
+        state[course] = 1
+        has_cycle = False
+        for c in graph[course]:
+            has_cycle |= dfs(c)
+        state[course] = 2
+        ans.append(course)
+        return has_cycle
+    
+    for course in range(numCourses):
+        if dfs(course):
+            return []
+    return ans[::-1]
+```
+</Collapsible>
+
+<Link 
+to="https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/" 
+target="_blank">Number of Connected Components in an Undirected Graph</Link>  
+Similar to the above problem. For every unvisited node, visit it and all its
+connected nodes, and return the number of visits you had to make. This is the
+DFS O(n) solution, but using a union find algorithm you can improve runtime to
+O(log n)
+
+<Collapsible>
+
+```python
+def countComponents(self, n: int, edges: List[List[int]]) -> int:
+    state, graph = [0] * n, [[] for _ in range(n)]
+    for [v1, v2] in edges:
+        graph[v1].append(v2)
+        graph[v2].append(v1)
+    
+    def dfs(v):
+        stack = [v]
+        state[v] = 1
+        while stack:
+            v = stack.pop()
+            for node in graph[v]:
+                if not state[node]:
+                    stack.append(node)
+                    state[node] = 1
+            
+    ans = 0
+    for v in range(n):
+        if not state[v]:
+            ans += 1
+            dfs(v)
+    return ans
 ```
 </Collapsible>

@@ -1,7 +1,7 @@
 Designing Data-Intensive Applications  
 *Martin Kleppmann*
 
-## Chapter 1
+## 1. Reliable, Scalable, and Maintainable Applications
 
 ### Intro
 
@@ -83,7 +83,7 @@ system. These practices generally adhere to these principles
 - simplicity: should be easily understandable for new engineers
 - evolvability: should facilitate adaptation in the future
 
-## Chapter 2
+## 2. Data Models and Query Languages
 
 ### Relational Model vs Document Model
 
@@ -99,7 +99,7 @@ positions), but relational databases are better suited to handling many-to-one
 or many-to-many relationships. These tend to arise when you normalize the 
 database by representing frequently-duplicated information using IDs.
 
-## Chapter 3
+## 3. Storage and Retrieval
 
 ### Database Data Structures
 
@@ -210,7 +210,7 @@ could store the aggregate value of purchases of all products across all
 customers on a specific date on one edge, or all historical purchases of all
 products by specific customers on another.
 
-## Chapter 4
+## 4. Encoding and Evolution
 
 ### Formats for Encoding Data
 
@@ -264,7 +264,7 @@ sender from receiver. This last point implies that senders no longer expect to
 receive synchronous replies to their messages. We say that senders publish
 messages to topics, which then go out to consumers of said topics.
 
-## Chapter 7
+## 7. Transactions
 
 ### ACID
 
