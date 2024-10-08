@@ -12,8 +12,8 @@ dist
 dist-ssr
 *.local
 .vite/
-src/content/blog/draft-*
-src/content/notes/draft-*
+src/content/blog/draft*
+src/content/notes/draft*
 
 # Editor directories and files
 .vscode/*

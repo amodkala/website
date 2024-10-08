@@ -505,38 +505,160 @@ def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int
 ```
 </Collapsible>
 
-<Link 
-to="https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/" 
-target="_blank">Number of Connected Components in an Undirected Graph</Link>  
-Similar to the above problem. For every unvisited node, visit it and all its
-connected nodes, and return the number of visits you had to make. This is the
-DFS O(n) solution, but using a union find algorithm you can improve runtime to
-O(log n)
+<Link to="https://leetcode.com/problems/word-search/">Word Search</Link>  
+Rudimentary DFS solution with backtracking. I'm really liking the |= operator
+for situations where I make multiple recursive calls, it feels clean idk.
 
 <Collapsible>
 
 ```python
-def countComponents(self, n: int, edges: List[List[int]]) -> int:
-    state, graph = [0] * n, [[] for _ in range(n)]
-    for [v1, v2] in edges:
-        graph[v1].append(v2)
-        graph[v2].append(v1)
+def exist(self, board: List[List[str]], word: str) -> bool:
+    moves = [(1,0),(-1,0),(0,-1),(0,1)]
+    def dfs(r, c, i, visited):
+        if i == len(word) - 1:
+            return True
+        visited.add((r, c))
+        contains_word = False
+        for (x,y) in moves:
+            valid = (r+y >= 0 and r+y < len(board)) and (c+x >= 0 and c+x < len(board[0]))
+            if valid and (r+y, c+x) not in visited and board[r+y][c+x] == word[i+1]:
+                contains_word |= dfs(r+y, c+x, i+1, visited)
+        visited.remove((r, c)) 
+        return contains_word
     
-    def dfs(v):
-        stack = [v]
-        state[v] = 1
-        while stack:
-            v = stack.pop()
-            for node in graph[v]:
-                if not state[node]:
-                    stack.append(node)
-                    state[node] = 1
-            
-    ans = 0
-    for v in range(n):
-        if not state[v]:
-            ans += 1
-            dfs(v)
+    for r in range(len(board)):
+        for c in range(len(board[0])):
+            if board[r][c] == word[0]:
+                if dfs(r, c, 0, set()):
+                    return True
+    return False
+```
+</Collapsible>
+
+<Link to="https://leetcode.com/problems/minimum-path-sum/">Minimum Path
+Sum</Link>  
+Easy 2-D DP solution 
+
+<Collapsible>
+
+```python
+def minPathSum(self, grid: List[List[int]]) -> int:
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if r == 0 and c == 0:
+                continue
+            top = 2 ** 31 if r-1 < 0 else grid[r-1][c]
+            left = 2 ** 31 if c-1 < 0 else grid[r][c-1]
+            grid[r][c] += min(top, left)
+    return grid[-1][-1]
+```
+</Collapsible>
+
+<Link to="https://leetcode.com/problems/path-sum-ii/">Path Sum II</Link>  
+Another problem reminiscent of CS 135, using the accumulator recursion pattern
+LOL
+
+<Collapsible>
+
+```python
+def pathSum(self, root: Optional[TreeNode], targetSum: int) -> List[List[int]]:
+    ans = []
+    def dfs(root, total, path):
+        if root is None:
+            return
+        total += root.val
+        new_path = path + [root.val]
+        if root.left is None and root.right is None and total == targetSum:
+            ans.append(new_path)
+        dfs(root.left, total, new_path)
+        dfs(root.right, total, new_path)
+    dfs(root, 0, [])
     return ans
 ```
 </Collapsible>
+
+<Link to="https://leetcode.com/problems/palindrome-partitioning">Palindrome
+Partitioning</Link>  
+Palindromes, anagrams, and other similar string processing questions have been
+an area of weakness for me, so despite how verbose the code is I'm happy I got a
+working solution on the first attempt.
+
+<Collapsible>
+
+```python
+def partition(self, s: str) -> List[List[str]]:
+    starts, ans = [[] for _ in range(len(s))], []
+    def is_palindrome(l,r):
+        while l >= 0 and r < len(s) and s[l] == s[r]:
+            p = s[l:r+1]
+            starts[l].append(p)
+            l -= 1
+            r += 1
+    
+    for i in range(len(s)):
+        is_palindrome(i,i)
+        is_palindrome(i,i+1)
+
+    def dfs(index, partition):
+        if index == len(s):
+            ans.append(partition)
+            return
+        for substring in starts[index]:
+            dfs(index + len(substring), partition + [substring])
+
+    for p in starts[0]:
+        dfs(len(p), [p])
+
+    return ans
+```
+</Collapsible>
+
+<Link 
+to="https://leetcode.com/problems/binary-tree-level-order-traversal-ii/">Binary
+Tree Level Order Traversal II</Link>  
+Easy BFS solution, I feel like reversing the array at the end is a bit of a
+cheat but it works
+
+<Collapsible>
+
+```python
+def levelOrderBottom(self, root: Optional[TreeNode]) -> List[List[int]]:
+    ans = []
+    def bfs(root, level):
+        if root is None:
+            return
+        queue = [(root, level)]
+        while queue:
+            (node, level) = queue.pop(0)
+            if len(ans) < level + 1:
+                ans.append([])
+            ans[level].append(node.val)
+            for child in [node.left, node.right]:
+                if child:
+                    queue.append((child, level+1))
+    bfs(root, 0)
+    return ans[::-1]
+```
+</Collapsible>
+
+<Link 
+to="https://leetcode.com/problems/check-if-a-string-is-a-valid-sequence-from-root-to-leaves-path-in-a-binary-tree/">Check
+if a String is a Valid Sequence from Root to Leaves Path in a Binary Tree</Link>  
+DFS tree problem, nothing to write home about
+
+<Collapsible>
+
+```python
+def isValidSequence(self, root: Optional[TreeNode], arr: List[int]) -> bool:
+    def search(root, index) -> bool:
+        if index == len(arr) - 1:
+            return root.left is None and root.right is None
+        valid = False
+        for child in [root.left, root.right]:
+            if child is not None and child.val == arr[index+1]:
+                valid |= search(child, index+1)
+        return valid
+    return search(root, 0)
+```
+</Collapsible>
+
