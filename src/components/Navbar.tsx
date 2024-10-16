@@ -10,12 +10,6 @@ export default function Navbar() {
                 <li className="inline pr-1.5">
                     <NavLink to="/blog">blog</NavLink>
                 </li>
-                <li className="inline pr-1.5">
-                    <NavLink to="/projects">projects</NavLink>
-                </li>
-                <li className="inline pr-1.5">
-                    <NavLink to="/notes">notes</NavLink>
-                </li>
             </ul>
         </div>
     )
