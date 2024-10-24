@@ -8,7 +8,7 @@ import Collapsible from "../../components/Collapsible";
 - <Link to="https://cses.fi/book/book.pdf" target="_blank">Competitive Programmer's
   Handbook</Link>
 
-***Wednesday, September 4, 2024***
+***September 2024***
 
 <Link to="https://leetcode.com/problems/longest-substring-without-repeating-characters/" target="_blank">Longest Substring Without Repeating Characters</Link>  
 One-shotted this solution, basic sliding window technique with a hash table to
@@ -321,8 +321,6 @@ def maxProfit(self, prices: List[int]) -> int:
     return ans
 ```
 </Collapsible>
-
-***Sunday, September 15, 2024***
 
 <Link
 to="https://leetcode.com/problems/nearest-exit-from-entrance-in-maze/"
@@ -662,3 +660,159 @@ def isValidSequence(self, root: Optional[TreeNode], arr: List[int]) -> bool:
 ```
 </Collapsible>
 
+***October 2024***
+
+<Link to="https://leetcode.com/problems/diameter-of-n-ary-tree">Diameter of
+N-Ary Tree</Link>  
+Got the intuition behind this problem (we only care about the two longest
+node-to-leaf paths of each node's children) straight away.
+
+<Collapsible>
+
+```python
+def diameter(self, root: 'Node') -> int:
+    """
+    :type root: 'Node'
+    :rtype: int
+    """
+    def traverse(root) -> (int, int):
+        if root is None or root.children is None:
+            return (0, 0)
+        rootMax, path1, path2 = 0, 0, 0
+        for child in root.children:
+            (asRoot, asPath) = traverse(child)
+            rootMax = max(rootMax, asRoot)
+            if asPath >= path1:
+                path2 = path1
+                path1 = asPath
+            else:
+                path2 = max(path2, asPath)
+        return (max(rootMax, path1 + path2), 1 + path1)
+    return traverse(root)[0]
+```
+</Collapsible>
+
+<Link to="https://leetcode.com/problems/merge-intervals/">Merge Intervals</Link>  
+Classic problem
+
+<Collapsible>
+
+```python
+def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+    intervals = sorted(intervals, key=lambda x: x[0])
+    ans = [intervals[0]]
+    current = 0
+    for i in range(1, len(intervals)):
+        if intervals[i][0] <= ans[current][1]:
+            ans[current][1] = max(ans[current][1],intervals[i][1])
+        else:
+            ans.append(intervals[i])
+            current += 1
+    return ans
+```
+</Collapsible>
+
+<Link to="https://leetcode.com/problems/set-matrix-zeroes/">Set Matrix
+Zeroes</Link>  
+Nice trick introduced here to use the first element of each row/column as a flag
+for O(1) space complexity.
+
+<Collapsible>
+
+```python
+def setZeroes(self, matrix: List[List[int]]) -> None:
+    """
+    Do not return anything, modify matrix in-place instead.
+    """
+    row_zero, col_zero = False, False
+    for r in range(len(matrix)):
+        for c in range(len(matrix[0])):
+            if not matrix[r][c]:
+                matrix[r][0] = 0
+                matrix[0][c] = 0
+                row_zero = row_zero or r == 0
+                col_zero = col_zero or c == 0
+    
+    for r in range(1, len(matrix)):
+        for c in range(1, len(matrix[0])):
+            if not matrix[r][0] or not matrix[0][c]:
+                matrix[r][c] = 0
+        
+    if row_zero:
+        for c in range(len(matrix[0])):
+            matrix[0][c] = 0
+    
+    if col_zero:
+        for r in range(len(matrix)):
+            matrix[r][0] = 0
+```
+</Collapsible>
+
+<Link
+to="https://leetcode.com/problems/time-needed-to-inform-all-employees/">Time
+Needed to Inform All Employees</Link>  
+My instinct was to approach this as a union-find problem of sorts (minus the 
+union bit), and I'm most familiar with the recursive formulation of that class
+of solution so I thought I'd give it a go. If I took the time to preprocess and
+construct an adjacency list I could have used a more conventional DFS solution
+but I'm satisfied with what I came up with.
+
+<Collapsible>
+
+```python
+def numOfMinutes(self, n: int, headID: int, manager: List[int], informTime: List[int]) -> int:
+    visited = [0] * n
+    def find(x):
+        if not visited[x]:
+            while manager[x] != -1:
+                (m, t) = find(manager[x])
+                manager[x] = m
+                informTime[x] += t
+            visited[x] = 1
+        return (manager[x], informTime[x])
+    ans = 0
+    for i in range(n):
+        if not visited[i]:
+            (_, t) = find(i)
+            ans = max(ans, t)
+    return ans
+```
+</Collapsible>
+
+<Link to="https://leetcode.com/problems/number-of-enclaves">Number of
+Enclaves</Link>  
+This problem is a modification of the "Number of Islands" problem above. I
+implemented a BFS solution as you would for that problem, but I suppose DFS is
+faster at determining whether an island is a valid enclave in the worst case.
+That consideration wasn't relevant to my solution, but it is something to
+consider.
+
+<Collapsible>
+
+```python
+def numEnclaves(self, grid: List[List[int]]) -> int:
+    moves = [(1,0),(-1,0),(0,1),(0,-1)]
+    def bfs(r, c):
+        queue = [(r,c)]
+        grid[r][c] = 0
+        count = 0
+        invalid = False
+        while queue:
+            (r, c) = queue.pop(0)
+            print(r, c)
+            count += 1
+            for (x, y) in moves:
+                valid = (r+y >= 0 and r+y < len(grid)) and (c+x >= 0 and c+x < len(grid[0]))
+                invalid |= not valid
+                if valid and grid[r+y][c+x]:
+                    queue.append((r+y,c+x))
+                    grid[r+y][c+x] = 0
+        return count if not invalid else 0
+    ans = 0
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c]:
+                ans += bfs(r, c)
+    return ans
+```
+</Collapsible>
