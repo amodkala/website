@@ -14,41 +14,17 @@ const router = createBrowserRouter([
         element: <Page />,
     },
     {
-        path: "/blog",
+        path: "/:page",
         loader: async ({ params }) => {
-            const module = await import(`./content/pages/blog.mdx`);
+            const module = await import(`./content/pages/${params.page}.mdx`);
             return { Content: module.default };
         },
         element: <Page />,
     },
     {
-        path: "/blog/:post",
+        path: "/:page/:subpage",
         loader: async ({ params }) => {
-            const module = await import(`./content/blog/${params.post}.mdx`);
-            return { Content: module.default };
-        },
-        element: <Page />,
-    },
-    {
-        path: "/projects",
-        loader: async ({ params }) => {
-            const module = await import(`./content/pages/projects.mdx`);
-            return { Content: module.default };
-        },
-        element: <Page />,
-    },
-    {
-        path: "/notes",
-        loader: async ({ params }) => {
-            const module = await import(`./content/pages/notes.mdx`);
-            return { Content: module.default };
-        },
-        element: <Page />,
-    },
-    {
-        path: "/notes/:note",
-        loader: async ({ params }) => {
-            const module = await import(`./content/notes/${params.note}.mdx`);
+            const module = await import(`./content/${params.page}/${params.subpage}.mdx`);
             return { Content: module.default };
         },
         element: <Page />,
