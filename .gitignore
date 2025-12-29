@@ -1,0 +1,27 @@
+# Hakyll
+_cache/
+_site/
+
+# Haskell/Cabal
+dist/
+dist-newstyle/
+cabal.project.local
+cabal.project.local~
+.ghc.environment.*
+*.hi
+*.o
+*.p_hi
+*.p_o
+*.dyn_hi
+*.dyn_o
+
+# Nix
+result
+result-*
+
+# Editor/IDE
+.DS_Store
+*.swp
+*.swo
+*~
+.direnv/
