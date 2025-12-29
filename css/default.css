@@ -40,6 +40,10 @@ main > * + * {
     margin-right: 0.5rem;
 }
 
+.social-links a {
+    text-decoration: underline;
+}
+
 .blog-posts {
     list-style: none;
     padding-left: 0;
