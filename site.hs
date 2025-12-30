@@ -3,6 +3,8 @@
 
 import Data.Monoid (mappend)
 import Hakyll
+import Text.Pandoc.Options
+import Text.Pandoc.SideNote (usingSideNotes)
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -15,10 +17,14 @@ main = hakyll $ do
     route idRoute
     compile compressCssCompiler
 
+  match "js/*" $ do
+    route idRoute
+    compile copyFileCompiler
+
   match "posts/*" $ do
     route $ setExtension "html"
     compile $
-      pandocCompiler
+      customPandocCompiler
         >>= loadAndApplyTemplate "templates/post.html" postCtx
         >>= loadAndApplyTemplate "templates/default.html" postCtx
         >>= relativizeUrls
@@ -46,15 +52,23 @@ main = hakyll $ do
   match "templates/*" $ compile templateBodyCompiler
 
 --------------------------------------------------------------------------------
+-- Custom Pandoc compiler with sidenotes and KaTeX math support
+customPandocCompiler :: Compiler (Item String)
+customPandocCompiler =
+  pandocCompilerWithTransform
+    defaultHakyllReaderOptions
+    writerOptions
+    usingSideNotes
+  where
+    writerOptions =
+      defaultHakyllWriterOptions
+        { writerHTMLMathMethod = KaTeX ""
+        }
+
+--------------------------------------------------------------------------------
+-- Post context: reads date from frontmatter metadata
 postCtx :: Context String
 postCtx =
-  dateField "date" "%d %b, %Y"
-    `mappend` modificationTimeField "updated" "%d %b, %Y"
+  dateField "date" "%B %e, %Y"
+    `mappend` modificationTimeField "updated" "%B %e, %Y"
     `mappend` defaultContext
-
-config :: Configuration
-config =
-  defaultConfiguration
-    { destinationDirectory = "_site"
-    , storeDirectory = "_cache"
-    }

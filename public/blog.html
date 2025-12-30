@@ -4,14 +4,30 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Blog</title>
-        <link rel="stylesheet" href="./css/default.css" />
+        
+        <!-- Web Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+        
+        <!-- KaTeX for math rendering -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+        
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="./css/default.css">
+        <link rel="stylesheet" href="./css/post.css">
+        
+        <!-- Table of Contents script -->
+        <script defer src="./js/toc.js"></script>
     </head>
     <body>
-        <header>
-            <a href="./">
+        <header class="site-header">
+            <a href="./" class="site-title">
                 <h1>Amod Kala</h1>
             </a>
-            <nav>
+            <nav class="site-nav">
                 <a href="./">Home</a>
                 <a href="./blog.html">Blog</a>
             </nav>
@@ -23,5 +39,27 @@
 
 
         </main>
+        <footer class="site-footer">
+            <p>Built with <a href="https://jaspervdj.be/hakyll/">Hakyll</a></p>
+        </footer>
+        
+        <!-- KaTeX rendering for Pandoc output -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Render math in span.math elements (Pandoc output)
+                document.querySelectorAll("span.math.inline").forEach(function(el) {
+                    katex.render(el.textContent, el, {
+                        displayMode: false,
+                        throwOnError: false
+                    });
+                });
+                document.querySelectorAll("span.math.display").forEach(function(el) {
+                    katex.render(el.textContent, el, {
+                        displayMode: true,
+                        throwOnError: false
+                    });
+                });
+            });
+        </script>
     </body>
 </html>

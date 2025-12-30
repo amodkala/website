@@ -1,0 +1,251 @@
+/* ==========================================================================
+   Post Layout - Centered with Margin Sidenotes
+   ========================================================================== */
+
+.post {
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Post Header */
+.post-header {
+    margin-bottom: 2rem;
+}
+
+.post-title {
+    font-size: 2.25rem;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.post-meta {
+    font-family: var(--font-serif);
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+/* ==========================================================================
+   Table of Contents (Left Column)
+   ========================================================================== */
+
+.toc {
+    display: none;
+}
+
+@media (min-width: 1200px) {
+    .toc {
+        display: block;
+        position: fixed;
+        left: calc((100vw - var(--content-width)) / 2 - 220px);
+        top: 6rem;
+        width: 180px;
+        max-height: calc(100vh - 8rem);
+        overflow-y: auto;
+    }
+
+    .toc-title {
+        font-family: var(--font-serif);
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--color-text-faint);
+        margin-bottom: 0.75rem;
+    }
+
+    .toc-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .toc-list li {
+        margin-bottom: 0.5rem;
+    }
+
+    .toc-list a {
+        font-family: var(--font-serif);
+        font-size: 0.85rem;
+        color: var(--color-text-muted);
+        text-decoration: none;
+        display: block;
+        padding: 0.15rem 0;
+        border-left: 2px solid transparent;
+        padding-left: 0.75rem;
+        margin-left: -0.75rem;
+        transition: color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .toc-list a:hover {
+        color: var(--color-text);
+    }
+
+    .toc-list a.active {
+        color: var(--color-text);
+        border-left-color: var(--color-text);
+    }
+}
+
+/* ==========================================================================
+   Post Content
+   ========================================================================== */
+
+.post-content {
+    counter-reset: sidenote-counter;
+}
+
+.post-content > *:first-child {
+    margin-top: 0;
+}
+
+.post-content h2,
+.post-content h3 {
+    scroll-margin-top: 2rem;
+}
+
+/* ==========================================================================
+   Sidenotes & Margin Notes (Tufte-style)
+   ========================================================================== */
+
+/* The clickable number in the text */
+.margin-toggle.sidenote-number {
+    counter-increment: sidenote-counter;
+}
+
+.margin-toggle.sidenote-number::after {
+    content: counter(sidenote-counter);
+    font-size: 0.7rem;
+    position: relative;
+    top: -0.5rem;
+    left: 0.1rem;
+    color: var(--color-text);
+}
+
+/* Hide the checkbox by default */
+input.margin-toggle {
+    display: none;
+}
+
+/* The sidenote content */
+.sidenote,
+.marginnote {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+}
+
+/* Sidenote number prefix inside the note itself */
+.sidenote::before {
+    content: counter(sidenote-counter) ". ";
+    font-size: 0.75rem;
+    position: relative;
+    top: -0.3rem;
+}
+
+/* Margin notes have no number */
+.marginnote::before {
+    content: none;
+}
+
+/* ==========================================================================
+   Sidenotes - Desktop Layout (in right margin)
+   ========================================================================== */
+
+@media (min-width: 1000px) {
+    .sidenote,
+    .marginnote {
+        float: right;
+        clear: right;
+        margin-right: -240px;
+        width: 200px;
+        margin-top: 0.3rem;
+        margin-bottom: 1rem;
+        vertical-align: baseline;
+        position: relative;
+    }
+
+    /* For margin notes toggle icon (not shown on desktop) */
+    label.margin-toggle:not(.sidenote-number) {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   Sidenotes - Mobile Layout (inline, expandable)
+   ========================================================================== */
+
+@media (max-width: 999px) {
+    /* Show toggle icon for margin notes */
+    label.margin-toggle:not(.sidenote-number) {
+        display: inline;
+        cursor: pointer;
+        color: var(--color-text-muted);
+    }
+
+    label.margin-toggle:not(.sidenote-number)::after {
+        content: " [+]";
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+    }
+
+    /* Make the sidenote number clickable */
+    .margin-toggle.sidenote-number {
+        cursor: pointer;
+    }
+
+    /* Hide sidenotes by default on mobile */
+    .sidenote,
+    .marginnote {
+        display: none;
+    }
+
+    /* Show sidenotes when checkbox is checked */
+    .margin-toggle:checked + .sidenote,
+    .margin-toggle:checked + .marginnote {
+        display: block;
+        float: none;
+        width: 100%;
+        margin: 1rem 0;
+        padding: 1rem;
+        background-color: var(--color-bg-code);
+        border-radius: 4px;
+        border-left: 3px solid var(--color-border);
+    }
+}
+
+/* ==========================================================================
+   Post Content - Special Elements
+   ========================================================================== */
+
+/* Code blocks should not overflow */
+.post-content pre {
+    max-width: 100%;
+}
+
+/* Math display blocks */
+.post-content .katex-display {
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* ==========================================================================
+   Responsive Adjustments
+   ========================================================================== */
+
+@media (max-width: 600px) {
+    .post-title {
+        font-size: 1.75rem;
+    }
+
+    .post-content h2 {
+        font-size: 1.35rem;
+    }
+
+    .post-content h3 {
+        font-size: 1.15rem;
+    }
+}
